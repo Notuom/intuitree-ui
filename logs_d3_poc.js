@@ -20,26 +20,38 @@ d3.json("logs.json", (error, data) => {
 
     console.log(root);
 
+    // Links between nodes
     var link = g.selectAll(".link")
         .data(tree(root).links())
         .enter().append("path")
         .attr("class", "link")
         .attr("d", d3.linkHorizontal()
-            .x(d => d.y)
+            .x(d => d.y + 200)
             .y(d => d.x));
 
+    // Node container
     var node = g.selectAll(".node")
         .data(root.descendants())
         .enter().append("g")
         .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
 
+    // Node rectangle container
+    node.append("rect")
+        .attr("y", -50)
+        .attr("width", 200)
+        .attr("stroke", "black")
+        .attr("fill", d => d.data.status.color || "#CECECE")
+        .attr("height", 100);
+
+    // Node circle
     node.append("circle")
         .attr("r", 2.5);
 
+    // Node text
     node.append("text")
         .attr("dy", 3)
-        .attr("x", d => d.children ? -8 : 8)
-        .style("text-anchor", d => d.children ? "end" : "start")
+        .attr("x", 100)
+        .style("text-anchor", "middle")
         .text(d => d.data.title);
 });

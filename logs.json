@@ -3,6 +3,10 @@
   "id": 0,
   "title": "Execution Root",
   "message": "Execution #1337 started at 13:37 on 2017/04/10.",
+  "status": {
+    "title": "Success",
+    "color": "#A3D977"
+  },
   "logs": [
     {
       "id": 1,
