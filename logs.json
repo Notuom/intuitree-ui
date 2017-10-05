@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "id": 0,
+  "title": "Execution Root",
+  "message": "Execution #1337 started at 13:37 on 2017/04/10.",
+  "logs": [
+    {
+      "id": 1,
+      "title": "Section 1",
+      "message": "Section 1 failed because there was no paragraph template.",
+      "status": {
+        "title": "Fail",
+        "color": "#FF8F80"
+      },
+      "tags": {
+        "section": "1"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Section 2",
+      "message": "Section 2 succeeded.",
+      "status": {
+        "title": "Success",
+        "color": "#A3D977"
+      },
+      "tags": {
+        "section": "2"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Section 3",
+      "message": "Section 3 succeeded.",
+      "status": {
+        "title": "Success",
+        "color": "#A3D977"
+      },
+      "tags": {
+        "section": "3"
+      },
+      "logs": [
+        {
+          "id": 4,
+          "title": "Paragraph 3-1",
+          "message": "Lorem ipsum dolor sit amet.",
+          "status": {
+            "title": "Success",
+            "color": "#A3D977"
+          },
+          "tags": {
+            "paragraph": "3-1"
+          },
+          "logs": [
+            {
+              "id": 5,
+              "title": "Sentence 3-1-1",
+              "message": "Lorem ipsum dolor sit amet.",
+              "status": {
+                "title": "Success",
+                "color": "#A3D977"
+              },
+              "tags": {
+                "sentence": "3-1-1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
