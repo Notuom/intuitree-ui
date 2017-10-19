@@ -6,11 +6,10 @@
   </button>
   <div class="collapse navbar-collapse" id="mainNavigation">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/execution-tree">Execution Tree</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/data-management">Data Management</a>
+      <li *ngFor="let item of navItems" class="nav-item">
+        <a [routerLink]="'/' + item.slug" class="nav-link" [ngClass]="{'active': item.slug === currentNavSlug}">
+          {{ item.title }}
+        </a>
       </li>
     </ul>
   </div>

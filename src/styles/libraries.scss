@@ -1,9 +1,16 @@
 /*
- * Boostrap imports. Only the necessary modules are imported and custom variables are added to override default ones.
+ * Import external libraries here.
  */
-@import "~bootstrap/scss/functions",
+@import
+
+  // Bootstrap base
+"~bootstrap/scss/functions",
 "~bootstrap/scss/variables",
+
+// Override Bootstrap variables
 "variables",
+
+// Bootstrap modules
 "~bootstrap/scss/mixins",
 "~bootstrap/scss/print",
 "~bootstrap/scss/reboot",
@@ -35,4 +42,7 @@
 "~bootstrap/scss/tooltip",
 "~bootstrap/scss/popover",
 "~bootstrap/scss/carousel",
-"~bootstrap/scss/utilities";
+"~bootstrap/scss/utilities",
+
+// FontAwesome icons
+"~font-awesome/scss/font-awesome";

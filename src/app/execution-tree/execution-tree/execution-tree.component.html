@@ -1,3 +1,43 @@
-<p>
-  execution-tree works!
-</p>
+<div class="card mt-sm-4 mb-sm-4">
+  <div class="card-header">
+    Search Filters
+    <i class="fa fa-question-circle" tooltip="Add filters in order to narrow down the displayed logs."></i>
+  </div>
+  <div class="card-body">
+    <form class="form-inline">
+      <select name="filterView" id="filterView" class="form-control mr-sm-2">
+        <option value="tree">View: Tree</option>
+        <option value="list">View: List</option>
+      </select>
+      <select name="filterExecution" id="filterExecution" class="form-control mr-sm-2">
+        <option value="">Execution</option>
+      </select>
+      <input name="filterTags" id="filterTags" type="text" class="form-control mr-sm-2" placeholder="Filter by tags...">
+      <input name="filterStatus" id="filterStatus" type="text" class="form-control mr-sm-2"
+             placeholder="Filter by status...">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input [(ngModel)]="filterAnnotated" name="filterAnnotated" id="filterAnnotated" type="checkbox"
+                 class="form-check-input" value="">
+          Annotated
+        </label>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Execution Tree</div>
+  <div class="card-body">
+    <div *ngIf="filterExecution !== null"></div>
+    <div *ngIf="allExecutions.length > 0 && filterExecution === null" class="alert alert-info mb-0">
+      <i class="fa fa-info-circle"></i>
+      Select an execution in the Search Filters in order to view its tree.
+    </div>
+    <div *ngIf="allExecutions.length === 0" class="alert alert-warning mb-0">
+      <i class="fa fa-warning"></i>
+      No executions are currently available. Please start by importing a log file in the
+      <a routerLink="/data-management">Data Management</a> tab.
+    </div>
+  </div>
+</div>

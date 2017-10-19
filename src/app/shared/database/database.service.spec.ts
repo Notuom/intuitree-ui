@@ -18,14 +18,9 @@ describe('DatabaseService', () => {
   it('#clearAll should clear everything', async(inject([DatabaseService], (db: DatabaseService) => {
     return db.executions.add(new Execution("TestExecution")).then(() => {
       db.clearAll().subscribe(
-        () => {
-          db.executions.count().then(count => {
-            expect(count).toBe(0);
-          });
-        },
-        error => {
-          fail(error);
-        }
+        () => db.executions.count().then(count => {
+          expect(count).toBe(0);
+        }), error => fail(error)
       );
     });
   })));

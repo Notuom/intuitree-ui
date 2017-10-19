@@ -14,6 +14,9 @@ import 'rxjs/add/observable/forkJoin';
 // IndexedDB schema version. Updated it if the schema changes.
 const dbVersion = 1;
 
+/**
+ * Service for interacting with the Dexie.js database.
+ */
 @Injectable()
 export class DatabaseService extends Dexie {
 
