@@ -2,3 +2,8 @@
  * Master styles
  */
 @import "libraries";
+
+// Add margin to a form-check container so that the checkbox is aligned with the other form controls which have labels.
+.form-check-label-height {
+  margin-top: 2.5rem;
+}

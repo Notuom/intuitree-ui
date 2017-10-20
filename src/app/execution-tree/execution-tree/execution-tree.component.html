@@ -4,23 +4,63 @@
     <i class="fa fa-question-circle" tooltip="Add filters in order to narrow down the displayed logs."></i>
   </div>
   <div class="card-body">
-    <form class="form-inline">
-      <select name="filterView" id="filterView" class="form-control mr-sm-2">
-        <option value="tree">View: Tree</option>
-        <option value="list">View: List</option>
-      </select>
-      <select name="filterExecution" id="filterExecution" class="form-control mr-sm-2">
-        <option value="">Execution</option>
-      </select>
-      <input name="filterTags" id="filterTags" type="text" class="form-control mr-sm-2" placeholder="Filter by tags...">
-      <input name="filterStatus" id="filterStatus" type="text" class="form-control mr-sm-2"
-             placeholder="Filter by status...">
-      <div class="form-check">
-        <label class="form-check-label">
-          <input [(ngModel)]="filterAnnotated" name="filterAnnotated" id="filterAnnotated" type="checkbox"
-                 class="form-check-input" value="">
-          Annotated
-        </label>
+    <form>
+      <div class="row">
+        <div class="col-sm">
+          <div class="form-group">
+            <label for="filterView">
+              View
+              <i class="fa fa-question-circle" tooltip="Change how the execution tree is visualized."></i>
+            </label>
+            <select name="filterView" id="filterView" class="form-control">
+              <option value="tree">Tree</option>
+              <option value="list">List</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm">
+          <label for="filterExecution">
+            Execution
+            <i class="fa fa-question-circle" tooltip="Choose which execution is being analyzed."></i>
+          </label>
+          <select [(ngModel)]="filterExecution" name="filterExecution" id="filterExecution" class="form-control">
+            <option [ngValue]="null">Choose Execution...</option>
+            <option *ngFor="let execution of allExecutions" [ngValue]="execution">{{ execution.title }}</option>
+          </select>
+        </div>
+        <div class="col-sm">
+          <label for="filterTags">
+            Tags
+            <i class="fa fa-question-circle"
+               tooltip="Add tags to include in the displayed logs. You can also add values which much match for tags to be displayed."></i>
+          </label>
+          <select name="filterTags" id="filterTags" class="form-control">
+            <option [ngValue]="null">Add Tag filter...</option>
+            <option *ngFor="let tag of allTags" [ngValue]="tag">{{ tag.name }}</option>
+          </select>
+        </div>
+        <div class="col-sm">
+          <label for="filterStatus">
+            Status
+            <i class="fa fa-question-circle" tooltip="Choose which log status to display."></i>
+          </label>
+          <select name="filterStatus" id="filterStatus" class="form-control">
+            <option [ngValue]="null">All statuses</option>
+            <option *ngFor="let status of allStatuses" [ngValue]="status" [style.backgroundColor]="status.color">
+              {{ status.name }}
+            </option>
+          </select>
+        </div>
+        <div class="col-sm">
+          <div class="form-check form-check-label-height">
+            <label class="form-check-label">
+              <input [(ngModel)]="filterAnnotated" name="filterAnnotated" id="filterAnnotated" type="checkbox"
+                     class="form-check-input">
+              Annotated
+              <i class="fa fa-question-circle" tooltip="Only display logs which have been annotated."></i>
+            </label>
+          </div>
+        </div>
       </div>
     </form>
   </div>
