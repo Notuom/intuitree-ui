@@ -12,9 +12,10 @@
               View
               <i class="fa fa-question-circle" tooltip="Change how the execution tree is visualized."></i>
             </label>
-            <select name="filterView" id="filterView" class="form-control">
-              <option value="tree">Tree</option>
+            <select [(ngModel)]="filterView" (change)="renderTree()" name="filterView" id="filterView"
+                    class="form-control">
               <option value="list">List</option>
+              <option value="tree">Tree</option>
             </select>
           </div>
         </div>
@@ -23,20 +24,10 @@
             Execution
             <i class="fa fa-question-circle" tooltip="Choose which execution is being analyzed."></i>
           </label>
-          <select [(ngModel)]="filterExecution" name="filterExecution" id="filterExecution" class="form-control">
+          <select [(ngModel)]="filterExecution" (change)="renderTree()" name="filterExecution" id="filterExecution"
+                  class="form-control">
             <option [ngValue]="null">Choose Execution...</option>
             <option *ngFor="let execution of allExecutions" [ngValue]="execution">{{ execution.title }}</option>
-          </select>
-        </div>
-        <div class="col-sm">
-          <label for="filterTags">
-            Tags
-            <i class="fa fa-question-circle"
-               tooltip="Add tags to include in the displayed logs. You can also add values which much match for tags to be displayed."></i>
-          </label>
-          <select name="filterTags" id="filterTags" class="form-control">
-            <option [ngValue]="null">Add Tag filter...</option>
-            <option *ngFor="let tag of allTags" [ngValue]="tag">{{ tag.name }}</option>
           </select>
         </div>
         <div class="col-sm">
@@ -44,7 +35,8 @@
             Status
             <i class="fa fa-question-circle" tooltip="Choose which log status to display."></i>
           </label>
-          <select name="filterStatus" id="filterStatus" class="form-control">
+          <select [(ngModel)]="filterStatus" (change)="renderTree()" name="filterStatus" id="filterStatus"
+                  class="form-control">
             <option [ngValue]="null">All statuses</option>
             <option *ngFor="let status of allStatuses" [ngValue]="status" [style.backgroundColor]="status.color">
               {{ status.name }}
@@ -54,11 +46,36 @@
         <div class="col-sm">
           <div class="form-check form-check-label-height">
             <label class="form-check-label">
-              <input [(ngModel)]="filterAnnotated" name="filterAnnotated" id="filterAnnotated" type="checkbox"
+              <input [(ngModel)]="filterAnnotated" (change)="renderTree()" name="filterAnnotated" id="filterAnnotated"
+                     type="checkbox"
                      class="form-check-input">
               Annotated
               <i class="fa fa-question-circle" tooltip="Only display logs which have been annotated."></i>
             </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <label for="filterTags">
+            Tags
+            <i class="fa fa-question-circle"
+               tooltip="Add tags to include in the displayed logs. You can also add values which much match for tags to be displayed."></i>
+          </label>
+          <select [(ngModel)]="selectedTagFilter" (change)="addTagValueFilter($event)" name="filterTags" id="filterTags"
+                  class="form-control">
+            <option [ngValue]="null">Add Tag filter...</option>
+            <option *ngFor="let tag of allTags" [ngValue]="tag">{{ tag.name }}</option>
+          </select>
+        </div>
+        <div *ngIf="filterTagValues.length > 0" class="col-sm-8">
+          <label>Current tags</label>
+          <div>
+            <div *ngFor="let tagValue of filterTagValues; let i = index" class="badge badge-secondary mr-1">
+              {{ tagValue.tag.name }}
+              <span *ngIf="tagValue.value !== ''"> = &quot;{{ tagValue.value }}&quot;</span>
+              <i (click)="removeTagValueFilter(i)" class="remove-tag-filter fa fa-remove" tooltip="Remove this tag filter"></i>
+            </div>
           </div>
         </div>
       </div>
@@ -69,7 +86,9 @@
 <div class="card">
   <div class="card-header">Execution Tree</div>
   <div class="card-body">
-    <div *ngIf="filterExecution !== null"></div>
+    <div *ngIf="filterExecution !== null" id="treeRender">
+
+    </div>
     <div *ngIf="allExecutions.length > 0 && filterExecution === null" class="alert alert-info mb-0">
       <i class="fa fa-info-circle"></i>
       Select an execution in the Search Filters in order to view its tree.
