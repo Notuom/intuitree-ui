@@ -5,7 +5,7 @@ export class Tag {
 
   constructor(name: string, id?: number) {
     this.name = name;
-    if(id) this.id = id;
+    if (typeof id !== "undefined") this.id = id;
   }
 
 }

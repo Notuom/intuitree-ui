@@ -7,7 +7,7 @@ export class Status {
   constructor(name: string, color: string, id?: number) {
     this.name = name;
     this.color = color;
-    if(id) this.id = id;
+    if (typeof id !== "undefined") this.id = id;
   }
 
 }

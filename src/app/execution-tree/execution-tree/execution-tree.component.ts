@@ -5,6 +5,7 @@ import {Tag} from "../../shared/domain/tag";
 import {Status} from "../../shared/domain/status";
 import {Log} from "../../shared/domain/log";
 import {TagValue} from "../domain/tag-value";
+import * as d3 from "d3";
 
 /**
  * Root component for the Execution Tree tab.
@@ -16,7 +17,7 @@ import {TagValue} from "../domain/tag-value";
 })
 export class ExecutionTreeComponent implements OnInit {
 
-  // TODO separate search filter panel and tree display component
+  // TODO separate search filter panel and tree display components
 
   // Filter data
   allExecutions: Execution[] = [];
@@ -69,9 +70,39 @@ export class ExecutionTreeComponent implements OnInit {
    */
   renderTree() {
     if (this.filterExecution !== null) {
+
+      // TODO search for Logs that match the different criteria
+
       this.db.logs.where("executionId").equals(this.filterExecution.id).toArray(logs => {
-        logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title, null, 0));
-        console.info(logs);
+
+        // Add Execution to tree as root node
+        logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title, "This is the root node for " + this.filterExecution.title, 0));
+        console.log("All logs", logs);
+
+        // Stratify data into hierarchical format using default D3 function (.id and .parentId)
+        let root = d3.stratify()(logs);
+
+        // Select DOM root element
+        let div = d3.select("#treeRender");
+
+        // Remove previous visualization
+        div.selectAll("ul").remove();
+
+        // Create new container for tree elements
+        let ul = div.append("ul");
+
+        // Bind data to list
+        let node = ul.selectAll("li")
+          .data(root.descendants())
+          .enter().append("li")
+          .style("margin-left", d => d.depth * 2 + "rem")
+          .text(d => (<Log>d.data).title)
+          .attr("title", d => (<Log>d.data).message);
+
+        console.log("Root", root);
+      }).catch(reject => {
+        console.error(reject);
+        alert("An error occurred while processing the tree. Please view the console for more details.");
       });
     }
   }

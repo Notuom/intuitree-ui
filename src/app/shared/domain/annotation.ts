@@ -11,7 +11,7 @@ export class Annotation {
     this.changedStatusId = changedStatusId;
     this.message = message;
     this.timestamp = timestamp;
-    if(id) this.id = id;
+    if (typeof id !== "undefined") this.id = id;
   }
 
 }
