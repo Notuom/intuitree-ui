@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import Dexie from "dexie";
-import {Execution} from "../domain/execution";
-import {Status} from "../domain/status";
-import {Tag} from "../domain/tag";
-import {Log} from "../domain/log";
-import {Annotation} from "../domain/annotation";
-import {LogTag} from "../domain/log-tag";
+import Dexie from 'dexie';
+import {Execution} from '../domain/execution';
+import {Status} from '../domain/status';
+import {Tag} from '../domain/tag';
+import {Log} from '../domain/log';
+import {Annotation} from '../domain/annotation';
+import {LogTag} from '../domain/log-tag';
 
-import {Observable} from "rxjs/Observable";
+import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/forkJoin';
 

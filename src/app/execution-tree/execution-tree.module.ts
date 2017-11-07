@@ -1,11 +1,12 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ExecutionTreeComponent} from './execution-tree/execution-tree.component';
-import {ExecutionTreeRoutingModule} from "./execution-tree-routing.module";
-import {SharedModule} from "../shared/shared.module";
-import {AlertModule, TooltipModule} from "ngx-bootstrap";
+import {ExecutionTreeRoutingModule} from './execution-tree-routing.module';
+import {SharedModule} from '../shared/shared.module';
+import {AlertModule, TooltipModule} from 'ngx-bootstrap';
+import { TreeViewComponent } from './tree-view/tree-view.component';
 
 @NgModule({
   imports: [
@@ -17,7 +18,7 @@ import {AlertModule, TooltipModule} from "ngx-bootstrap";
     SharedModule,
     ExecutionTreeRoutingModule
   ],
-  declarations: [ExecutionTreeComponent]
+  declarations: [ExecutionTreeComponent, TreeViewComponent]
 })
 export class ExecutionTreeModule {
 }

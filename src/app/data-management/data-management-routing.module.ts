@@ -1,7 +1,7 @@
-import {RouterModule, Routes} from "@angular/router";
-import {NgModule} from "@angular/core";
+import {RouterModule, Routes} from '@angular/router';
+import {NgModule} from '@angular/core';
 
-import {DataManagementComponent} from "./data-management/data-management.component";
+import {DataManagementComponent} from './data-management/data-management.component';
 
 const dataManagementRoutes: Routes = [
   {

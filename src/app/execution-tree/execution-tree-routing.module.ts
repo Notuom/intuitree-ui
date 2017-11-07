@@ -1,7 +1,7 @@
-import {RouterModule, Routes} from "@angular/router";
-import {NgModule} from "@angular/core";
+import {RouterModule, Routes} from '@angular/router';
+import {NgModule} from '@angular/core';
 
-import {ExecutionTreeComponent} from "./execution-tree/execution-tree.component";
+import {ExecutionTreeComponent} from './execution-tree/execution-tree.component';
 
 const executionTreeRoutes: Routes = [
   {

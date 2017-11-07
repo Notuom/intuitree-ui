@@ -13,7 +13,9 @@ export class Log {
     this.statusId = statusId;
     this.title = title;
     this.message = message;
-    if (typeof id !== "undefined") this.id = id;
+    if (typeof id !== 'undefined') {
+      this.id = id;
+    }
   }
 
 }

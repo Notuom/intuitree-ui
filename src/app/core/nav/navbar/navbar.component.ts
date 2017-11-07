@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {NavigationEnd, Router} from "@angular/router";
+import {NavigationEnd, Router} from '@angular/router';
 import 'rxjs/add/operator/filter';
-import {NavItem} from "./nav-item";
+import {NavItem} from './nav-item';
 
 
 @Component({
@@ -12,10 +12,10 @@ import {NavItem} from "./nav-item";
 export class NavbarComponent implements OnInit {
 
   navItems: NavItem[] = [
-    new NavItem("execution-tree", "Execution Tree"),
-    new NavItem("data-management", "Data Management")
+    new NavItem('execution-tree', 'Execution Tree'),
+    new NavItem('data-management', 'Data Management')
   ];
-  currentNavSlug = "";
+  currentNavSlug = '';
 
   constructor(private router: Router) {
   }
@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.router.events
       .filter(event => event instanceof NavigationEnd)
-      .subscribe(event => this.currentNavSlug = (<NavigationEnd>event).url.split("/")[1]);
+      .subscribe(event => this.currentNavSlug = (<NavigationEnd>event).url.split('/')[1]);
   }
 
 }

@@ -5,7 +5,9 @@ export class Execution {
 
   constructor(title: string, id?: number) {
     this.title = title;
-    if (typeof id !== "undefined") this.id = id;
+    if (typeof id !== 'undefined') {
+      this.id = id;
+    }
   }
 
 }

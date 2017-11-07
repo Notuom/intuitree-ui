@@ -1,7 +1,7 @@
 import {TestBed, inject, async} from '@angular/core/testing';
 
 import {DatabaseService} from './database.service';
-import {Execution} from "../domain/execution";
+import {Execution} from '../domain/execution';
 
 describe('DatabaseService', () => {
 
@@ -16,7 +16,7 @@ describe('DatabaseService', () => {
   }));
 
   it('#clearAll should clear everything', async(inject([DatabaseService], (db: DatabaseService) => {
-    return db.executions.add(new Execution("TestExecution")).then(() => {
+    return db.executions.add(new Execution('TestExecution')).then(() => {
       db.clearAll().subscribe(
         () => db.executions.count().then(count => {
           expect(count).toBe(0);
@@ -26,10 +26,10 @@ describe('DatabaseService', () => {
   })));
 
   it('should store an Execution with auto-increment', async(inject([DatabaseService], (db: DatabaseService) => {
-    return db.executions.add(new Execution("TestExecution")).then(() => {
+    return db.executions.add(new Execution('TestExecution')).then(() => {
       return db.executions.get(1);
     }).then(execution => {
-      expect(execution.title).toBe("TestExecution");
+      expect(execution.title).toBe('TestExecution');
       return db.executions.count();
     }).then(count => {
       expect(count).toBe(1);

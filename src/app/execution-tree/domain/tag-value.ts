@@ -1,4 +1,4 @@
-import {Tag} from "../../shared/domain/tag";
+import {Tag} from '../../shared/domain/tag';
 
 export class TagValue {
 

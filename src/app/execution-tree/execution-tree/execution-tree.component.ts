@@ -1,14 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {DatabaseService} from "../../shared/database/database.service";
-import {Execution} from "../../shared/domain/execution";
-import {Tag} from "../../shared/domain/tag";
-import {Status} from "../../shared/domain/status";
-import {Log} from "../../shared/domain/log";
-import {TagValue} from "../domain/tag-value";
-import * as d3 from "d3";
+import {DatabaseService} from '../../shared/database/database.service';
+import {Execution} from '../../shared/domain/execution';
+import {Tag} from '../../shared/domain/tag';
+import {Status} from '../../shared/domain/status';
+import {Log} from '../../shared/domain/log';
+import {TagValue} from '../domain/tag-value';
+import {TreeViewComponent} from '../tree-view/tree-view.component';
 
 /**
  * Root component for the Execution Tree tab.
+ * Contains search filters and execution tree view.
  */
 @Component({
   selector: 'app-execution-tree',
@@ -25,12 +26,15 @@ export class ExecutionTreeComponent implements OnInit {
   allStatuses: Status[] = [];
 
   // Filter state
-  filterView = "list";
   filterExecution: Execution = null;
   selectedTagFilter: Tag = null;
   filterTagValues: TagValue[] = [];
   filterStatus: Status = null;
-  filterAnnotated: boolean = false;
+  filterAnnotated = false;
+
+  // Tree view parameters
+  viewMode = TreeViewComponent.listViewMode;
+  viewLogs: Log[] = [];
 
   constructor(private db: DatabaseService) {
   }
@@ -40,16 +44,17 @@ export class ExecutionTreeComponent implements OnInit {
    */
   addTagValueFilter() {
     if (this.selectedTagFilter !== null) {
-      let filterTagValue = prompt(`Enter a filter value for tag "${this.selectedTagFilter.name}". Leave empty to search for all logs which are tagged with "${this.selectedTagFilter.name}".`);
+      const filterTagValue = prompt(`Enter a filter value for tag '${this.selectedTagFilter.name}'.\n` +
+        `Leave empty to search for all logs which are tagged with '${this.selectedTagFilter.name}'.`);
       this.filterTagValues.push(new TagValue(this.selectedTagFilter, filterTagValue));
 
-      // Change the tag select value back to the "add tag filter" option
+      // Change the tag select value back to the 'add tag filter' option
       setTimeout(() => this.selectedTagFilter = null, 0);
     }
   }
 
   /**
-   * When a tag value filter's "x" button is clicked, remove it from the list.
+   * When a tag value filter's 'x' button is clicked, remove it from the list.
    * @param {number} index
    */
   removeTagValueFilter(index: number) {
@@ -72,37 +77,19 @@ export class ExecutionTreeComponent implements OnInit {
     if (this.filterExecution !== null) {
 
       // TODO search for Logs that match the different criteria
+      // TODO implement tree visualization and switch according to dropdown
 
-      this.db.logs.where("executionId").equals(this.filterExecution.id).toArray(logs => {
+      this.db.logs.where('executionId').equals(this.filterExecution.id).toArray(logs => {
 
         // Add Execution to tree as root node
-        logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title, "This is the root node for " + this.filterExecution.title, 0));
-        console.log("All logs", logs);
+        logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title,
+          'This is the root node for ' + this.filterExecution.title, 0));
+        console.log('All logs', logs);
 
-        // Stratify data into hierarchical format using default D3 function (.id and .parentId)
-        let root = d3.stratify()(logs);
-
-        // Select DOM root element
-        let div = d3.select("#treeRender");
-
-        // Remove previous visualization
-        div.selectAll("ul").remove();
-
-        // Create new container for tree elements
-        let ul = div.append("ul");
-
-        // Bind data to list
-        let node = ul.selectAll("li")
-          .data(root.descendants())
-          .enter().append("li")
-          .style("margin-left", d => d.depth * 2 + "rem")
-          .text(d => (<Log>d.data).title)
-          .attr("title", d => (<Log>d.data).message);
-
-        console.log("Root", root);
+        this.viewLogs = logs;
       }).catch(reject => {
         console.error(reject);
-        alert("An error occurred while processing the tree. Please view the console for more details.");
+        alert('An error occurred while processing the tree. Please view the console for more details.');
       });
     }
   }
