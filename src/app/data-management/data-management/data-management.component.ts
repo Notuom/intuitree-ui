@@ -41,7 +41,7 @@ export class DataManagementComponent {
 
       // Add everything in parallel and alert when completed
       Observable.forkJoin(
-        Observable.fromPromise(this.db.executions.add(new Execution('Test Execution', 1)).then()),
+        Observable.fromPromise(this.db.executions.add(new Execution('Test Execution', 1))),
         Observable.fromPromise(this.db.statuses.bulkAdd([
           new Status('Success', '#A3D977', 1),
           new Status('Warning', '#FFDF71', 2),

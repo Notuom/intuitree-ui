@@ -1,10 +1,15 @@
-// TODO taken directly from example
+svg {
+  width: 100%;
+}
+
+// Selector to allow to target D3-generated (which Angular doesn't generate itself) DOM elements
 :host ::ng-deep {
+  // TODO taken directly from example
   .node rect {
     cursor: pointer;
     fill: #fff;
     fill-opacity: 0.5;
-    stroke: #3182bd;
+    stroke: #888;
     stroke-width: 1.5px;
   }
 
@@ -15,8 +20,8 @@
 
   .link {
     fill: none;
-    stroke: #9ecae1;
+    stroke: #AAA;
     stroke-width: 1.5px;
   }
+  // END
 }
-// END

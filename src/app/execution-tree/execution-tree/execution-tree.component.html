@@ -12,7 +12,7 @@
               View
               <i class="fa fa-question-circle" tooltip="Change how the execution tree is visualized."></i>
             </label>
-            <select [(ngModel)]="viewMode" (change)="renderTree()" name="filterView" id="filterView"
+            <select [(ngModel)]="viewMode" (change)="applyFilters()" name="filterView" id="filterView"
                     class="form-control">
               <option value="list">List</option>
               <option value="tree">Tree</option>
@@ -24,7 +24,7 @@
             Execution
             <i class="fa fa-question-circle" tooltip="Choose which execution is being analyzed."></i>
           </label>
-          <select [(ngModel)]="filterExecution" (change)="renderTree()" name="filterExecution" id="filterExecution"
+          <select [(ngModel)]="filterExecution" (change)="applyFilters()" name="filterExecution" id="filterExecution"
                   class="form-control">
             <option [ngValue]="null">Choose Execution...</option>
             <option *ngFor="let execution of allExecutions" [ngValue]="execution">{{ execution.title }}</option>
@@ -35,7 +35,7 @@
             Status
             <i class="fa fa-question-circle" tooltip="Choose which log status to display."></i>
           </label>
-          <select [(ngModel)]="filterStatus" (change)="renderTree()" name="filterStatus" id="filterStatus"
+          <select [(ngModel)]="filterStatus" (change)="applyFilters()" name="filterStatus" id="filterStatus"
                   class="form-control">
             <option [ngValue]="null">All statuses</option>
             <option *ngFor="let status of allStatuses" [ngValue]="status" [style.backgroundColor]="status.color">
@@ -46,7 +46,7 @@
         <div class="col-sm">
           <div class="form-check form-check-label-height">
             <label class="form-check-label">
-              <input [(ngModel)]="filterAnnotated" (change)="renderTree()" name="filterAnnotated" id="filterAnnotated"
+              <input [(ngModel)]="filterAnnotated" (change)="applyFilters()" name="filterAnnotated" id="filterAnnotated"
                      type="checkbox"
                      class="form-check-input">
               Annotated

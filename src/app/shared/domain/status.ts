@@ -1,5 +1,7 @@
 export class Status {
 
+  static readonly defaultColor = '#666';
+
   name: string;
   color: string;
   id: number;

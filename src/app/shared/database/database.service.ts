@@ -11,9 +11,6 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/forkJoin';
 
-// IndexedDB schema version. Updated it if the schema changes.
-const dbVersion = 1;
-
 /**
  * Service for interacting with the Dexie.js database.
  */
@@ -30,13 +27,14 @@ export class DatabaseService extends Dexie {
   constructor() {
     super('intuitree');
 
-    this.version(dbVersion).stores({
+    // See http://dexie.org/docs/Tutorial/Design for more information on how to upgrade schema after initial release.
+    this.version(1).stores({
       executions: '++id, title',
       statuses: '++id, name, color',
       tags: '++id, name',
-      logs: '++id, executionId, parentId, statusId, title, message',
+      logs: '++id, executionId, parentId, statusId, title, message, [executionId+statusId]',
       annotations: '++id, logId, changedStatusId, message, timestamp',
-      logTags: '++id, name'
+      logTags: '++id, logId, tagId, value'
     });
 
     this.executions.mapToClass(Execution);

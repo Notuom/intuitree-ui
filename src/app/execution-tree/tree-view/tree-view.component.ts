@@ -1,7 +1,8 @@
-///<reference path="../../../../node_modules/@types/d3-selection/index.d.ts"/>
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, OnChanges, OnInit} from '@angular/core';
 import {Log} from '../../shared/domain/log';
 import * as d3 from 'd3';
+import {HierarchyNode} from "d3-hierarchy";
+import {Status} from "../../shared/domain/status";
 
 @Component({
   selector: 'app-tree-view',
@@ -11,50 +12,77 @@ import * as d3 from 'd3';
 export class TreeViewComponent implements OnInit, OnChanges {
 
   // String constants
-  static readonly svgSelector = "svg#treeRender";
   static readonly listViewMode = 'list';
   static readonly treeViewMode = 'tree';
 
   // TODO taken directly from example
-  private margin = {top: 30, right: 20, bottom: 30, left: 20};
-  private width = 960;
+  private margin = {top: 12, right: 2, bottom: 2, left: 2};
+  private elementWidth = 0;
   private barHeight = 20;
-  private barWidth = (this.width - this.margin.left - this.margin.right) * 0.8;
+  private barWidth;
   private i = 0;
   private duration = 400;
   private diagonal = d3.linkHorizontal()
     .x((d: any) => d.y)
     .y((d: any) => d.x);
-  private svg;
+  private svg: any;
+  private svgGroup: any;
   private root;
   // END
 
   @Input() mode = TreeViewComponent.listViewMode;
   @Input() logs: Log[] = [];
 
-  constructor() {
+  constructor(private el: ElementRef) {
   }
 
+  /**
+   * When window is resized and the width changes, re-render tree with the new width.
+   */
+  @HostListener('window:resize')
+  onResize() {
+    console.info("onResize called", this.elementWidth, this.el.nativeElement.offsetWidth);
+    if (this.elementWidth != this.el.nativeElement.offsetWidth) {
+      this.elementWidth = this.el.nativeElement.offsetWidth;
+      // TODO see if there is a cleaner way to do this, but this seems to work.
+      this.svgGroup.selectAll('g, path').remove();
+      this.render();
+    }
+  }
+
+  /**
+   * When component is initiated (once per app run), calculate the initial width and call the update method.
+   */
   ngOnInit() {
-    this.svg = d3.select(TreeViewComponent.svgSelector)
-      .attr("width", this.width) // + margin.left + margin.right)
-      .append("g")
-      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-    this.render();
+    console.info('ngOnInit called');
+    this.elementWidth = this.el.nativeElement.offsetWidth;
+    this.ngOnChanges();
   }
 
+  /**
+   * When data-binded attributes change, re-render with the new data.
+   */
   ngOnChanges() {
-    this.render();
+    console.info("ngOnChanges called");
+    // TODO only re-render if the logs have changed?
+    // Only render if there are logs, otherwise this component will not be shown (see ngIf on parent component).
+    if (this.logs.length > 0) {
+      this.render();
+    }
   }
 
+  /**
+   * Render the current tree as a list via D3.
+   */
   render() {
 
     // List render based on https://bl.ocks.org/mbostock/1093025
+    this.svg = d3.select('svg#treeRender');
+    this.svgGroup = d3.select('g#treeRenderRootGroup')
+      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
     // Stratify data into hierarchical format using default D3 function (.id and .parentId)
     if (this.logs.length > 0) {
-      console.info("Render called", this.logs);
-
       this.root = d3.stratify()(this.logs);
       this.root.x0 = 0;
       this.root.y0 = 0;
@@ -63,22 +91,23 @@ export class TreeViewComponent implements OnInit, OnChanges {
     }
   }
 
+  /**
+   * Update the current list via D3. Can be called from root or any parent when clicked.
+   * @param source
+   */
   update(source) {
+    this.barWidth = this.elementWidth * 0.4;
 
     // Compute the flattened node list.
     const nodes = this.root.descendants();
 
-    console.info("Nodes", nodes);
+    console.info("Nodes received when updating list", nodes);
 
     const height = nodes.length * this.barHeight + this.margin.top + this.margin.bottom;
 
     d3.select("svg").transition()
       .duration(this.duration)
       .attr("height", height);
-
-    d3.select(self.frameElement).transition()
-      .duration(this.duration)
-      .style("height", height + "px");
 
     // Compute the "layout". TODO https://github.com/d3/d3-hierarchy/issues/67
     let index = -1;
@@ -88,7 +117,7 @@ export class TreeViewComponent implements OnInit, OnChanges {
     });
 
     // Update the nodes…
-    const node = this.svg.selectAll(".node")
+    const node = this.svgGroup.selectAll(".node")
       .data(nodes, (d: any) => d.id || (d.id = ++this.i));
 
     const nodeEnter = node.enter().append("g")
@@ -130,7 +159,7 @@ export class TreeViewComponent implements OnInit, OnChanges {
       .remove();
 
     // Update the links…
-    const link = this.svg.selectAll(".link")
+    const link = this.svgGroup.selectAll(".link")
       .data(this.root.links(), (d: any) => d.target.id);
 
     // Enter any new links at the parent's previous position.
@@ -176,7 +205,8 @@ export class TreeViewComponent implements OnInit, OnChanges {
     this.update(d);
   }
 
-  private static color(d) {
-    return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+  private static color(d: HierarchyNode<Log>) {
+    return d.data.status !== null ? d.data.status.color : Status.defaultColor;
   }
+
 }
