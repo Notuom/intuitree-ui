@@ -1,5 +1,5 @@
-import {Status} from "./status";
-import {LogTag} from "./log-tag";
+import {Status} from './status';
+import {LogTag} from './log-tag';
 
 export class Log {
 

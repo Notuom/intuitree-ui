@@ -1,8 +1,8 @@
 import {Component, ElementRef, HostListener, Input, OnChanges, OnInit} from '@angular/core';
 import {Log} from '../../shared/domain/log';
 import * as d3 from 'd3';
-import {HierarchyNode} from "d3-hierarchy";
-import {Status} from "../../shared/domain/status";
+import {HierarchyNode} from 'd3-hierarchy';
+import {Status} from '../../shared/domain/status';
 
 @Component({
   selector: 'app-tree-view',
@@ -33,6 +33,10 @@ export class TreeViewComponent implements OnInit, OnChanges {
   @Input() mode = TreeViewComponent.listViewMode;
   @Input() logs: Log[] = [];
 
+  private static color(d: HierarchyNode<Log>) {
+    return d.data.status !== null ? d.data.status.color : Status.defaultColor;
+  }
+
   constructor(private el: ElementRef) {
   }
 
@@ -41,8 +45,8 @@ export class TreeViewComponent implements OnInit, OnChanges {
    */
   @HostListener('window:resize')
   onResize() {
-    console.info("onResize called", this.elementWidth, this.el.nativeElement.offsetWidth);
-    if (this.elementWidth != this.el.nativeElement.offsetWidth) {
+    console.info('onResize called', this.elementWidth, this.el.nativeElement.offsetWidth);
+    if (this.elementWidth !== this.el.nativeElement.offsetWidth) {
       this.elementWidth = this.el.nativeElement.offsetWidth;
       // TODO see if there is a cleaner way to do this, but this seems to work.
       this.svgGroup.selectAll('g, path').remove();
@@ -63,7 +67,7 @@ export class TreeViewComponent implements OnInit, OnChanges {
    * When data-binded attributes change, re-render with the new data.
    */
   ngOnChanges() {
-    console.info("ngOnChanges called");
+    console.info('ngOnChanges called');
     // TODO only re-render if the logs have changed?
     // Only render if there are logs, otherwise this component will not be shown (see ngIf on parent component).
     if (this.logs.length > 0) {
@@ -79,7 +83,7 @@ export class TreeViewComponent implements OnInit, OnChanges {
     // List render based on https://bl.ocks.org/mbostock/1093025
     this.svg = d3.select('svg#treeRender');
     this.svgGroup = d3.select('g#treeRenderRootGroup')
-      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+      .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
     // Stratify data into hierarchical format using default D3 function (.id and .parentId)
     if (this.logs.length > 0) {
@@ -101,13 +105,13 @@ export class TreeViewComponent implements OnInit, OnChanges {
     // Compute the flattened node list.
     const nodes = this.root.descendants();
 
-    console.info("Nodes received when updating list", nodes);
+    console.info('Nodes received when updating list', nodes);
 
     const height = nodes.length * this.barHeight + this.margin.top + this.margin.bottom;
 
-    d3.select("svg").transition()
+    d3.select('svg').transition()
       .duration(this.duration)
-      .attr("height", height);
+      .attr('height', height);
 
     // Compute the "layout". TODO https://github.com/d3/d3-hierarchy/issues/67
     let index = -1;
@@ -117,71 +121,71 @@ export class TreeViewComponent implements OnInit, OnChanges {
     });
 
     // Update the nodes…
-    const node = this.svgGroup.selectAll(".node")
+    const node = this.svgGroup.selectAll('.node')
       .data(nodes, (d: any) => d.id || (d.id = ++this.i));
 
-    const nodeEnter = node.enter().append("g")
-      .attr("class", "node")
-      .attr("transform", d => "translate(" + source.y0 + "," + source.x0 + ")")
-      .style("opacity", 0);
+    const nodeEnter = node.enter().append('g')
+      .attr('class', 'node')
+      .attr('transform', d => 'translate(' + source.y0 + ',' + source.x0 + ')')
+      .style('opacity', 0);
 
     // Enter any new nodes at the parent's previous position.
-    nodeEnter.append("rect")
-      .attr("y", -this.barHeight / 2)
-      .attr("height", this.barHeight)
-      .attr("width", this.barWidth)
-      .style("fill", TreeViewComponent.color)
-      .on("click", this.click.bind(this));
+    nodeEnter.append('rect')
+      .attr('y', -this.barHeight / 2)
+      .attr('height', this.barHeight)
+      .attr('width', this.barWidth)
+      .style('fill', TreeViewComponent.color)
+      .on('click', this.click.bind(this));
 
-    nodeEnter.append("text")
-      .attr("dy", 3.5)
-      .attr("dx", 5.5)
+    nodeEnter.append('text')
+      .attr('dy', 3.5)
+      .attr('dx', 5.5)
       .text(d => d.data.title);
 
     // Transition nodes to their new position.
     nodeEnter.transition()
       .duration(this.duration)
-      .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-      .style("opacity", 1);
+      .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')')
+      .style('opacity', 1);
 
     node.transition()
       .duration(this.duration)
-      .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-      .style("opacity", 1)
-      .select("rect")
-      .style("fill", TreeViewComponent.color);
+      .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')')
+      .style('opacity', 1)
+      .select('rect')
+      .style('fill', TreeViewComponent.color);
 
     // Transition exiting nodes to the parent's new position.
     node.exit().transition()
       .duration(this.duration)
-      .attr("transform", d => "translate(" + source.y + "," + source.x + ")")
-      .style("opacity", 0)
+      .attr('transform', d => 'translate(' + source.y + ',' + source.x + ')')
+      .style('opacity', 0)
       .remove();
 
     // Update the links…
-    const link = this.svgGroup.selectAll(".link")
+    const link = this.svgGroup.selectAll('.link')
       .data(this.root.links(), (d: any) => d.target.id);
 
     // Enter any new links at the parent's previous position.
-    link.enter().insert("path", "g")
-      .attr("class", "link")
-      .attr("d", d => {
+    link.enter().insert('path', 'g')
+      .attr('class', 'link')
+      .attr('d', d => {
         const o: any = {x: source.x0, y: source.y0};
         return this.diagonal({source: o, target: o});
       })
       .transition()
       .duration(this.duration)
-      .attr("d", this.diagonal);
+      .attr('d', this.diagonal);
 
     // Transition links to their new position.
     link.transition()
       .duration(this.duration)
-      .attr("d", this.diagonal);
+      .attr('d', this.diagonal);
 
     // Transition exiting nodes to the parent's new position.
     link.exit().transition()
       .duration(this.duration)
-      .attr("d", d => {
+      .attr('d', d => {
         const o: any = {x: source.x, y: source.y};
         return this.diagonal({source: o, target: o});
       })
@@ -203,10 +207,6 @@ export class TreeViewComponent implements OnInit, OnChanges {
       d._children = null;
     }
     this.update(d);
-  }
-
-  private static color(d: HierarchyNode<Log>) {
-    return d.data.status !== null ? d.data.status.color : Status.defaultColor;
   }
 
 }

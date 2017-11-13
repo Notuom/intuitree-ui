@@ -6,7 +6,7 @@ import {Status} from '../../shared/domain/status';
 import {Log} from '../../shared/domain/log';
 import {TagValue} from '../domain/tag-value';
 import {TreeViewComponent} from '../tree-view/tree-view.component';
-import {LogTag} from "../../shared/domain/log-tag";
+import {LogTag} from '../../shared/domain/log-tag';
 
 /**
  * Root component for the Execution Tree tab.
@@ -99,8 +99,7 @@ export class ExecutionTreeComponent implements OnInit {
       if (this.filterStatus !== null) {
         // Execution ID + Status ID
         query = this.db.logs.where('[executionId+statusId]').equals([this.filterExecution.id, this.filterStatus.id]);
-      }
-      else {
+      } else {
         // Execution ID only (minimal)
         query = this.db.logs.where('executionId').equals(this.filterExecution.id);
       }
