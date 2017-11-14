@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, OnChanges} from '@angular/core';
 import {Log} from '../../shared/domain/log';
 import * as d3 from 'd3';
 import {HierarchyNode} from 'd3-hierarchy';
@@ -9,15 +9,15 @@ import {Status} from '../../shared/domain/status';
   templateUrl: './tree-view.component.html',
   styleUrls: ['./tree-view.component.scss']
 })
-export class TreeViewComponent implements OnInit, OnChanges {
+export class TreeViewComponent implements OnChanges {
 
   // String constants
   static readonly listViewMode = 'list';
   static readonly treeViewMode = 'tree';
 
-  // TODO taken directly from example
+  // TODO mostly taken directly from example, adapt some more
   private margin = {top: 12, right: 2, bottom: 2, left: 2};
-  private elementWidth = 0;
+  private elementWidth;
   private barHeight = 20;
   private barWidth;
   private i = 0;
@@ -55,19 +55,11 @@ export class TreeViewComponent implements OnInit, OnChanges {
   }
 
   /**
-   * When component is initiated (once per app run), calculate the initial width and call the update method.
-   */
-  ngOnInit() {
-    console.info('ngOnInit called');
-    this.elementWidth = this.el.nativeElement.offsetWidth;
-    this.ngOnChanges();
-  }
-
-  /**
    * When data-binded attributes change, re-render with the new data.
    */
   ngOnChanges() {
     console.info('ngOnChanges called');
+    this.elementWidth = this.el.nativeElement.offsetWidth;
     // TODO only re-render if the logs have changed?
     // Only render if there are logs, otherwise this component will not be shown (see ngIf on parent component).
     if (this.logs.length > 0) {

@@ -6,6 +6,7 @@ import {Status} from '../../shared/domain/status';
 import {Tag} from '../../shared/domain/tag';
 import {LogTag} from '../../shared/domain/log-tag';
 import {Observable} from 'rxjs/Observable';
+import {Annotation} from '../../shared/domain/annotation';
 
 /**
  * Root component for the Data Management tab.
@@ -71,6 +72,9 @@ export class DataManagementComponent {
           new LogTag(7, 3, '3-3-1'),
           new LogTag(8, 3, '3-3-2'),
           new LogTag(9, 3, '3-3-3')
+        ])),
+        Observable.fromPromise(this.db.annotations.bulkAdd([
+          new Annotation(1, 2, 'Changed the status because I wanted to.', 0)
         ]))
       ).subscribe(success => alert('Test data has been generated.'),
         error => alert('Error when generating test data: ' + error));

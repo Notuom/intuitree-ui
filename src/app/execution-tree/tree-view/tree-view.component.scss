@@ -4,7 +4,7 @@ svg {
 
 // Selector to allow to target D3-generated (which Angular doesn't generate itself) DOM elements
 :host ::ng-deep {
-  // TODO taken directly from example
+  // TODO taken directly from example, adapt if needed
   .node rect {
     cursor: pointer;
     fill: #fff;
