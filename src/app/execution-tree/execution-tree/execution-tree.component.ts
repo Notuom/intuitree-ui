@@ -129,9 +129,6 @@ export class ExecutionTreeComponent implements OnInit {
           logs = logs.filter(log => logsWithAnnotationIds.includes(log.id));
         }
 
-        // Add Execution to tree as root node
-        logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title,
-          'This is the root node for ' + this.filterExecution.title, 0));
         logIds = logs.map(log => log.id);
 
         // Retrieve all LogTags for current Logs
@@ -206,6 +203,12 @@ export class ExecutionTreeComponent implements OnInit {
           log.highlight = true;
           return log.id;
         });
+
+        // Add Execution to tree as root node TODO
+        if (logs.length > 0) {
+          logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title,
+            'This is the root node for ' + this.filterExecution.title, 0));
+        }
 
         // Find the missing parent logs in the database recursively (tangential promise chain)
         return this.recursiveFindLogParents(logs, logs, logIds);

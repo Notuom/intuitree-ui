@@ -87,7 +87,13 @@
 <div class="card">
   <div class="card-header">Execution Tree</div>
   <div class="card-body">
-    <app-tree-view *ngIf="filterExecution !== null" [mode]="viewMode" [logs]="viewLogs"></app-tree-view>
+    <app-tree-view *ngIf="filterExecution !== null && viewLogs.length > 0" [mode]="viewMode"
+                   [logs]="viewLogs"></app-tree-view>
+    <div *ngIf="allExecutions.length > 0 && filterExecution !== null && viewLogs.length === 0"
+         class="alert alert-info mb-0">
+      <i class="fa fa-info-circle"></i>
+      The search returned no results.
+    </div>
     <div *ngIf="allExecutions.length > 0 && filterExecution === null" class="alert alert-info mb-0">
       <i class="fa fa-info-circle"></i>
       Select an execution in the Search Filters in order to view its tree.

@@ -117,7 +117,6 @@ export class TreeViewComponent implements OnChanges {
       .data(nodes, (d: any) => d.id || (d.id = ++this.i));
 
     const nodeEnter = node.enter().append('g')
-      .attr('class', 'node')
       .attr('transform', d => 'translate(' + source.y0 + ',' + source.x0 + ')')
       .style('opacity', 0);
 
@@ -139,6 +138,10 @@ export class TreeViewComponent implements OnChanges {
       .duration(this.duration)
       .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')')
       .style('opacity', 1);
+
+    // Update existing nodes' classes to keep their opacity in sync with the updated data
+    nodeEnter.merge(node)
+      .attr('class', d => 'node' + ((d.data.highlight === true) ? ' highlight' : ''));
 
     node.transition()
       .duration(this.duration)
