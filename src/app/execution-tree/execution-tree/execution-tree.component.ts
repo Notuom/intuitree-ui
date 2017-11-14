@@ -106,7 +106,8 @@ export class ExecutionTreeComponent implements OnInit {
           .toArray();
       }
 
-      let logs, logIds;
+      let logs: Array<Log>, logIds: Array<number>;
+      const completeLogTagMap: Map<number, LogTag[]> = new Map();
       logQuery.then(queriedLogs => {
         console.info('Queried logs', queriedLogs);
 
@@ -153,7 +154,6 @@ export class ExecutionTreeComponent implements OnInit {
         console.info('filterTagValueMap', filterTagValueMap);
 
         // Store all LogTags retrieved by LogId in a map
-        const completeLogTagMap: Map<number, LogTag[]> = new Map();
         const fulfilledLogTagMap: Map<number, LogTag[]> = new Map();
         queriedLogTags.forEach(logTag => {
 
@@ -201,21 +201,57 @@ export class ExecutionTreeComponent implements OnInit {
             fulfilledLogTagMap.get(log.id).length === completeLogTagMap.get(log.id).length;
         });
 
+        // Mark the current logs as highlighted since they are the search results and keep their IDs in logIds
+        logIds = logs.map(log => {
+          log.highlight = true;
+          return log.id;
+        });
+
+        // Find the missing parent logs in the database recursively (tangential promise chain)
+        return this.recursiveFindLogParents(logs, logs, logIds);
+      }).then(returnedLogs => {
+        console.log('Returned Logs', returnedLogs);
+
+        logs = returnedLogs;
+
         // Perform "joins" on the log properties
         logs.forEach(log => {
           log.status = this.statusMap.get(log.statusId) || null;
-          log.logTags = fulfilledLogTagMap.get(log.id) || [];
+          log.logTags = completeLogTagMap.get(log.id) || [];
         });
-
-        // TODO somewhere around here : add the missing parents to the current logs in order to make it work!
 
         // Set current logs to update data-binded tree
         this.viewLogs = logs;
       }).catch(reject => {
         console.error(reject);
-        alert('An error occurred while processing the tree. Please view the console for more details.');
+        alert('An error occurred while searching the logs. Please view the console for more details.');
       });
     }
+  }
+
+  recursiveFindLogParents(searchLogs: Array<Log>, allLogs: Array<Log>, allLogIds: Array<number>) {
+    const missingIds: Array<number> = [];
+
+    // Go through all logs and find the missing parents
+    searchLogs.forEach(log => {
+      if (log.parentId !== 0 && log.parentId !== null && !allLogIds.includes(log.parentId) && !missingIds.includes(log.parentId)) {
+        missingIds.push(log.parentId);
+      }
+    });
+
+    console.info('Missing IDs', missingIds);
+
+    // Stop condition : when there are no more missing parent IDs, return all the queried logs
+    if (missingIds.length === 0) {
+      return allLogs;
+    }
+
+    // Find logs corresponding to missing parent IDs
+    return this.db.logs.where(':id').anyOf(missingIds).toArray().then(missingLogs => {
+      allLogs = allLogs.concat(missingLogs);
+      allLogIds = allLogIds.concat(missingLogs.map(missingLog => missingLog.id));
+      return this.recursiveFindLogParents(missingLogs, allLogs, allLogIds);
+    });
   }
 
   ngOnInit() {
