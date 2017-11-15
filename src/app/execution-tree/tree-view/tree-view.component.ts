@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Input, OnChanges} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output} from '@angular/core';
 import {Log} from '../../shared/domain/log';
 import * as d3 from 'd3';
 import {HierarchyNode} from 'd3-hierarchy';
@@ -15,7 +15,11 @@ export class TreeViewComponent implements OnChanges {
   static readonly listViewMode = 'list';
   static readonly treeViewMode = 'tree';
 
-  // TODO mostly taken directly from example, adapt some more
+  @Input() mode = TreeViewComponent.listViewMode;
+  @Input() logs: Log[] = [];
+  @Output() detailsToggled = new EventEmitter<Log>();
+
+  // D3 list-related variables
   private margin = {top: 12, right: 2, bottom: 2, left: 2};
   private elementWidth;
   private barHeight = 20;
@@ -28,10 +32,9 @@ export class TreeViewComponent implements OnChanges {
   private svg: any;
   private svgGroup: any;
   private root;
-  // END
 
-  @Input() mode = TreeViewComponent.listViewMode;
-  @Input() logs: Log[] = [];
+  // Log which is sent to the parent component to show its details
+  private activeLog: Log = null;
 
   private static color(d: HierarchyNode<Log>) {
     return d.data.status !== null ? d.data.status.color : Status.defaultColor;
@@ -126,12 +129,19 @@ export class TreeViewComponent implements OnChanges {
       .attr('height', this.barHeight)
       .attr('width', this.barWidth)
       .style('fill', TreeViewComponent.color)
-      .on('click', this.click.bind(this));
+      .on('click', this.toggle.bind(this));
 
     nodeEnter.append('text')
       .attr('dy', 3.5)
       .attr('dx', 5.5)
       .text(d => d.data.title);
+
+    nodeEnter.append('text')
+      .attr('class', 'list-toggler')
+      .attr('dy', 3.5)
+      .attr('dx', this.barWidth - 12)
+      .text('\uf069') // Asterisk FontAwesome icon
+      .on('click', this.details.bind(this));
 
     // Transition nodes to their new position.
     nodeEnter.transition()
@@ -193,7 +203,9 @@ export class TreeViewComponent implements OnChanges {
     });
   }
 
-  private click(d: any) {
+  private toggle(d: any) {
+    console.info('Toggle called', d);
+
     if (d.children) {
       d._children = d.children;
       d.children = null;
@@ -202,6 +214,12 @@ export class TreeViewComponent implements OnChanges {
       d._children = null;
     }
     this.update(d);
+  }
+
+  private details(d: any) {
+    this.activeLog = d.data;
+    this.detailsToggled.emit(this.activeLog);
+    console.info('Details', this.activeLog);
   }
 
 }

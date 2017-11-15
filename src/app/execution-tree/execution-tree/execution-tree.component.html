@@ -69,11 +69,15 @@
           </select>
         </div>
         <div *ngIf="filterTagValues.length > 0" class="col-sm-8">
-          <label>Current tags</label>
+          <div>
+            Current tags
+            <i class="fa fa-question-circle"
+               tooltip="Only the logs that contain (even partially) any of these tag values will be displayed."></i>
+          </div>
           <div>
             <div *ngFor="let tagValue of filterTagValues; let i = index" class="badge badge-secondary mr-1">
               {{ tagValue.tag.name }}
-              <span *ngIf="tagValue.value !== ''"> = &quot;{{ tagValue.value }}&quot;</span>
+              <span *ngIf="tagValue.value !== ''"> ≈ &quot;{{ tagValue.value }}&quot;</span>
               <i (click)="removeTagValueFilter(i)" class="remove-tag-filter fa fa-remove"
                  tooltip="Remove this tag filter"></i>
             </div>
@@ -84,11 +88,33 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header">Execution Tree</div>
+<div *ngIf="activeLog !== null" class="card bg-light mb-3">
+  <div class="card-header">
+    <strong>Details:</strong> {{ activeLog.title }}
+    <button type="button" class="close" aria-label="Close" (click)="setActiveLog(null)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <div class="card-body">
-    <app-tree-view *ngIf="filterExecution !== null && viewLogs.length > 0" [mode]="viewMode"
-                   [logs]="viewLogs"></app-tree-view>
+    <div>{{ activeLog.message }}</div>
+    <div *ngIf="activeLog.logTags.length > 0">
+      <strong>Tags:</strong>
+      <div *ngFor="let logTag of activeLog.logTags; let i = index" class="badge badge-secondary mr-1">
+        {{ tagMap.get(logTag.tagId).name }} = &quot;{{ logTag.value }}&quot;
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Execution Tree
+    <i class="fa fa-question-circle" tooltip="Click on a log node to expand. Click on the * icon to show details."></i>
+  </div>
+  <div class="card-body">
+    <app-tree-view *ngIf="filterExecution !== null && viewLogs.length > 0"
+                   [mode]="viewMode" [logs]="viewLogs" (detailsToggled)="setActiveLog($event)">
+    </app-tree-view>
     <div *ngIf="allExecutions.length > 0 && filterExecution !== null && viewLogs.length === 0"
          class="alert alert-info mb-0">
       <i class="fa fa-info-circle"></i>

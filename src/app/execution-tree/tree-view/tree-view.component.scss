@@ -4,7 +4,6 @@ svg {
 
 // Selector to allow to target D3-generated (which Angular doesn't generate itself) DOM elements
 :host ::ng-deep {
-  // TODO taken directly from example, adapt if needed
   .node rect {
     cursor: pointer;
     fill: #fff;
@@ -20,8 +19,16 @@ svg {
   }
 
   .node text {
+    user-select: none;
     font: 10px sans-serif;
     pointer-events: none;
+  }
+
+  .node text.list-toggler {
+    user-select: none;
+    font-family: FontAwesome;
+    cursor: pointer;
+    pointer-events: all;
   }
 
   .link {
@@ -29,5 +36,4 @@ svg {
     stroke: #AAA;
     stroke-width: 1.5px;
   }
-  // END
 }

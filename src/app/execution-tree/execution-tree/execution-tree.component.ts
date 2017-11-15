@@ -40,6 +40,7 @@ export class ExecutionTreeComponent implements OnInit {
   // Tree view parameters
   viewMode = TreeViewComponent.listViewMode;
   viewLogs: Log[] = [];
+  activeLog: Log = null;
 
   constructor(private db: DatabaseService) {
   }
@@ -259,6 +260,10 @@ export class ExecutionTreeComponent implements OnInit {
 
   ngOnInit() {
     this.fetchFilterData();
+  }
+
+  setActiveLog(activeLog: Log) {
+    this.activeLog = activeLog;
   }
 
 }
