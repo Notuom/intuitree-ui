@@ -7,10 +7,11 @@
       <a routerLink="/execution-tree">Execution Tree</a> tab.</p>
     <p>Export a log file in order to save the annotations that were made when viewing the tree.</p>
 
-    <button class="btn btn-primary">
+    <label class="btn btn-primary btn-file">
       <i class="fa fa-upload"></i>
       Import
-    </button>
+      <input type="file" (change)="handleFileImport($event)">
+    </label>
     <button class="btn btn-primary">
       <i class="fa fa-download"></i>
       Export

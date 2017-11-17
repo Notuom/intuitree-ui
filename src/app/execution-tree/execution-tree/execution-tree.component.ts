@@ -93,7 +93,7 @@ export class ExecutionTreeComponent implements OnInit {
 
         // Get tags for this execution
         return this.db.tags
-          .where('executionId').equals(this.filterExecution.id).toArray()
+          .where('executionId').equals(this.filterExecution.id).toArray();
       }).then((queriedTags: Array<Tag>) => {
 
         // Store tags in map
@@ -246,11 +246,10 @@ export class ExecutionTreeComponent implements OnInit {
         alert('An error occurred while searching the logs. Please view the console for more details.');
       });
     } else {
-      console.info("FilterExecution was null...")
 
+      // Clear tags and statuses from the previous selected execution
       this.allTags = [];
       this.tagMap.clear();
-
       this.allStatuses = [];
       this.statusMap.clear();
     }

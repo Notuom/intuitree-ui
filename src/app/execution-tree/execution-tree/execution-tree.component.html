@@ -100,7 +100,10 @@
     <div *ngIf="activeLog.logTags.length > 0">
       <strong>Tags:</strong>
       <div *ngFor="let logTag of activeLog.logTags; let i = index" class="badge badge-secondary mr-1">
-        {{ tagMap.get(logTag.tagId).name }} = &quot;{{ logTag.value }}&quot;
+        {{ tagMap.get(logTag.tagId).name }}
+        <span *ngIf="logTag.value !== ''">
+           = &quot;{{ logTag.value }}&quot;
+        </span>
       </div>
     </div>
   </div>
