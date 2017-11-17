@@ -29,11 +29,11 @@ export class DatabaseService extends Dexie {
 
     // See http://dexie.org/docs/Tutorial/Design for more information on how to upgrade schema after initial release.
     this.version(1).stores({
-      executions: '++id, title',
-      statuses: '++id, name, color',
-      tags: '++id, name',
+      executions: '++id, title, message',
+      statuses: '++id, executionId, name, color',
+      tags: '++id, executionId, name',
       logs: '++id, executionId, parentId, statusId, title, message, [executionId+statusId]',
-      annotations: '++id, logId, changedStatusId, message, timestamp',
+      annotations: '++id, executionId, logId, changedStatusId, message, timestamp',
       logTags: '++id, logId, tagId, value'
     });
 

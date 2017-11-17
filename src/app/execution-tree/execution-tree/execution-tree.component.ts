@@ -77,39 +77,54 @@ export class ExecutionTreeComponent implements OnInit {
       this.allExecutions = executions;
       executions.forEach(execution => this.executionMap.set(execution.id, execution));
     });
-    this.db.tags.toArray(tags => {
-      this.allTags = tags;
-      tags.forEach(tag => this.tagMap.set(tag.id, tag));
-    });
-    this.db.statuses.toArray(statuses => {
-      this.allStatuses = statuses;
-      statuses.forEach(status => this.statusMap.set(status.id, status));
-    });
   }
 
   /**
    * Apply the filters and retrieve the adequate data set for rendering.
    */
   applyFilters() {
+    let logs: Array<Log>, logIds: Array<number>;
+    const completeLogTagMap: Map<number, LogTag[]> = new Map();
+
     if (this.filterExecution !== null) {
 
-      // Build query for logs according to specified filters
-      let logQuery: Promise<Array<Log>>;
-      if (this.filterStatus !== null) {
-        // Execution ID + Status ID are specified
-        logQuery = this.db.logs
-          .where('[executionId+statusId]').equals([this.filterExecution.id, this.filterStatus.id])
-          .toArray();
-      } else {
-        // Execution ID only is specified
-        logQuery = this.db.logs
-          .where('executionId').equals(this.filterExecution.id)
-          .toArray();
-      }
+      // Start a promise chain
+      Promise.resolve().then(() => {
 
-      let logs: Array<Log>, logIds: Array<number>;
-      const completeLogTagMap: Map<number, LogTag[]> = new Map();
-      logQuery.then(queriedLogs => {
+        // Get tags for this execution
+        return this.db.tags
+          .where('executionId').equals(this.filterExecution.id).toArray()
+      }).then((queriedTags: Array<Tag>) => {
+
+        // Store tags in map
+        this.allTags = queriedTags;
+        queriedTags.forEach(tag => this.tagMap.set(tag.id, tag));
+
+        // Get statuses for this execution
+        return this.db.statuses
+          .where('executionId').equals(this.filterExecution.id).toArray();
+      }).then((queriedStatuses: Array<Status>) => {
+
+        // Store statuses in map
+        this.allStatuses = queriedStatuses;
+        queriedStatuses.forEach(status => this.statusMap.set(status.id, status));
+
+        // Build query for logs according to specified filters
+        let logQuery: Promise<Array<Log>>;
+        if (this.filterStatus !== null) {
+          // Execution ID + Status ID are specified
+          logQuery = this.db.logs
+            .where('[executionId+statusId]').equals([this.filterExecution.id, this.filterStatus.id])
+            .toArray();
+        } else {
+          // Execution ID only is specified
+          logQuery = this.db.logs
+            .where('executionId').equals(this.filterExecution.id)
+            .toArray();
+        }
+
+        return logQuery;
+      }).then((queriedLogs: Array<Log>) => {
         console.info('Queried logs', queriedLogs);
 
         logs = queriedLogs;
@@ -123,7 +138,7 @@ export class ExecutionTreeComponent implements OnInit {
         }
 
         return annotationQuery;
-      }).then(queriedAnnotations => {
+      }).then((queriedAnnotations: Array<Annotation>) => {
         console.info('Queried annotations', queriedAnnotations);
         if (queriedAnnotations !== null) {
           const logsWithAnnotationIds = queriedAnnotations.map(annotation => annotation.id);
@@ -136,7 +151,7 @@ export class ExecutionTreeComponent implements OnInit {
         return this.db.logTags
           .where('logId').anyOf(logIds)
           .toArray();
-      }).then(queriedLogTags => {
+      }).then((queriedLogTags: Array<LogTag>) => {
         console.info('Queried LogTags', queriedLogTags);
 
         // Store all filter TagValues by TagId in a map
@@ -213,7 +228,7 @@ export class ExecutionTreeComponent implements OnInit {
 
         // Find the missing parent logs in the database recursively (tangential promise chain)
         return this.recursiveFindLogParents(logs, logs, logIds);
-      }).then(returnedLogs => {
+      }).then((returnedLogs: Array<Log>) => {
         console.log('Returned Logs', returnedLogs);
 
         logs = returnedLogs;
@@ -230,9 +245,24 @@ export class ExecutionTreeComponent implements OnInit {
         console.error(reject);
         alert('An error occurred while searching the logs. Please view the console for more details.');
       });
+    } else {
+      console.info("FilterExecution was null...")
+
+      this.allTags = [];
+      this.tagMap.clear();
+
+      this.allStatuses = [];
+      this.statusMap.clear();
     }
   }
 
+  /**
+   * Recursive Promise function which searches for the missing parents and only fulfills when there are none left.
+   * @param {Array<Log>} searchLogs The logs which need to be searched for missing parents.
+   * @param {Array<Log>} allLogs All of the logs which are to be displayed when done.
+   * @param {Array<number>} allLogIds Log IDs for the above.
+   * @returns {any} A Promise if there are still parents, otherwise all logs.
+   */
   recursiveFindLogParents(searchLogs: Array<Log>, allLogs: Array<Log>, allLogIds: Array<number>) {
     const missingIds: Array<number> = [];
 
