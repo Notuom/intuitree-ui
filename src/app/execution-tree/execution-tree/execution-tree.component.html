@@ -62,7 +62,7 @@
             <i class="fa fa-question-circle"
                tooltip="Add tags to include in the displayed logs. You can also add values which much match for tags to be displayed."></i>
           </label>
-          <select [(ngModel)]="selectedTagFilter" (change)="addTagValueFilter($event)" name="filterTags" id="filterTags"
+          <select [(ngModel)]="selectedTagFilter" (change)="addTagValueFilter()" name="filterTags" id="filterTags"
                   class="form-control">
             <option [ngValue]="null">Add Tag filter...</option>
             <option *ngFor="let tag of allTags" [ngValue]="tag">{{ tag.name }}</option>
