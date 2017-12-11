@@ -141,7 +141,7 @@ export class ExecutionTreeComponent implements OnInit {
       }).then((queriedAnnotations: Array<Annotation>) => {
         console.info('Queried annotations', queriedAnnotations);
         if (queriedAnnotations !== null) {
-          const logsWithAnnotationIds = queriedAnnotations.map(annotation => annotation.id);
+          const logsWithAnnotationIds = queriedAnnotations.map(annotation => annotation.logId);
           logs = logs.filter(log => logsWithAnnotationIds.includes(log.id));
         }
 

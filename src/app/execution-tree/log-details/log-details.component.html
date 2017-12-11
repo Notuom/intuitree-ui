@@ -27,7 +27,7 @@
 
     <p><strong>Annotations</strong></p>
 
-    <div class="list-group mb-2">
+    <div *ngIf="annotations.length > 0" class="list-group mb-2">
       <div *ngFor="let annotation of annotations" class="list-group-item flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <div class="mb-1">
@@ -45,6 +45,11 @@
         </div>
         <p>{{ annotation.message }}</p>
       </div>
+    </div>
+
+    <div *ngIf="annotations.length === 0" class="alert alert-info">
+      <i class="fa fa-info-circle"></i>
+      This log has not been annotated.
     </div>
 
     <div *ngIf="addingAnnotation" class="card mb-2">
