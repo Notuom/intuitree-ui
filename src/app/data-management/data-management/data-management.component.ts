@@ -95,7 +95,7 @@ export class DataManagementComponent {
           new LogTag(1, 9, 3, '3-3-3')
         ])),
         Observable.fromPromise(this.db.annotations.bulkAdd([
-          new Annotation(1, 1, 2, 'Changed the status because I wanted to.', 0)
+          new Annotation(1, 1, 2, 1, 'Changed the status because I wanted to.', 0)
         ]))
       ).subscribe(success => alert('Test data has been generated.'),
         error => alert('Error when generating test data: ' + error));

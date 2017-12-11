@@ -33,6 +33,8 @@ export class DataManagementService {
       // TODO validate against JSON schema here to make sure everything is valid
       const cache = new ImportCache();
 
+      // TODO import annotations
+
       Promise.resolve().then(() => {
         return this.importExecution(importData.execution);
       }).then((executionId: number) => {

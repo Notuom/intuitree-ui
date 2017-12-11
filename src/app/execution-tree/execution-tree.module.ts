@@ -6,7 +6,8 @@ import {ExecutionTreeComponent} from './execution-tree/execution-tree.component'
 import {ExecutionTreeRoutingModule} from './execution-tree-routing.module';
 import {SharedModule} from '../shared/shared.module';
 import {AlertModule, TooltipModule} from 'ngx-bootstrap';
-import { TreeViewComponent } from './tree-view/tree-view.component';
+import {TreeViewComponent} from './tree-view/tree-view.component';
+import {LogDetailsComponent} from './log-details/log-details.component';
 
 @NgModule({
   imports: [
@@ -18,7 +19,7 @@ import { TreeViewComponent } from './tree-view/tree-view.component';
     SharedModule,
     ExecutionTreeRoutingModule
   ],
-  declarations: [ExecutionTreeComponent, TreeViewComponent]
+  declarations: [ExecutionTreeComponent, TreeViewComponent, LogDetailsComponent]
 })
 export class ExecutionTreeModule {
 }

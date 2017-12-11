@@ -1,0 +1,93 @@
+<div *ngIf="activeLog !== null && tagMap !== null" class="card bg-light mb-3">
+  <div class="card-header">
+    <strong>Details:</strong> {{ activeLog.title }}
+    <button type="button" class="close" aria-label="Close" (click)="this.close.emit()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="card-body">
+    <div>{{ activeLog.message }}</div>
+
+    <div>
+      <strong>Status:</strong>
+      <span class="badge" [style.backgroundColor]="activeLog.status.color">
+        {{ activeLog.status.name }}
+      </span>
+    </div>
+
+    <div *ngIf="activeLog.logTags.length > 0">
+      <strong>Tags:</strong>
+      <div *ngFor="let logTag of activeLog.logTags; let i = index" class="badge badge-secondary mr-1">
+        {{ tagMap.get(logTag.tagId).name }}
+        <span *ngIf="logTag.value !== ''">
+           = &quot;{{ logTag.value }}&quot;
+        </span>
+      </div>
+    </div>
+
+    <p><strong>Annotations</strong></p>
+
+    <div class="list-group mb-2">
+      <div *ngFor="let annotation of annotations" class="list-group-item flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <div class="mb-1">
+            <span class="badge" [style.backgroundColor]="statusMap.get(annotation.changedStatusFromId).color">
+              {{ statusMap.get(annotation.changedStatusFromId).name }}
+            </span>
+
+            <em>changed to</em>
+
+            <span class="badge" [style.backgroundColor]="statusMap.get(annotation.changedStatusToId).color">
+              {{ statusMap.get(annotation.changedStatusToId).name }}
+            </span>
+          </div>
+          <small class="text-muted">{{ annotation.timestamp | date:'full' }}</small>
+        </div>
+        <p>{{ annotation.message }}</p>
+      </div>
+    </div>
+
+    <div *ngIf="addingAnnotation" class="card mb-2">
+      <div class="card-header card-">
+        New annotation
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm">
+            <div class="form-group">
+              <label for="logDetailsAddAnnotationStatus">Status change</label>
+              <select [(ngModel)]="addAnnotationStatus"
+                      name="logDetailsAddAnnotationStatus" id="logDetailsAddAnnotationStatus" class="form-control">
+                <option *ngFor="let status of allStatuses" [ngValue]="status" [style.backgroundColor]="status.color">
+                  {{ status.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm">
+            <div class="form-group">
+              <label for="logDetailsAddAnnotationMessage">Annotation</label>
+              <textarea [(ngModel)]="addAnnotationMessage"
+                        name="logDetailsAddAnnotationMessage" id="logDetailsAddAnnotationMessage" class="form-control">
+              </textarea>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button (click)="saveAnnotation()" class="btn btn-success">
+            <i class="fa fa-check"></i>
+            Save
+          </button>
+          <button (click)="resetAddAnnotation()" class="btn btn-danger">
+            <i class="fa fa-remove"></i>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="addAnnotation()" class="btn btn-primary">
+      <i class="fa fa-plus"></i> Add annotation
+    </button>
+  </div>
+</div>

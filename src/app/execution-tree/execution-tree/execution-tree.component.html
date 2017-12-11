@@ -88,26 +88,9 @@
   </div>
 </div>
 
-<div *ngIf="activeLog !== null" class="card bg-light mb-3">
-  <div class="card-header">
-    <strong>Details:</strong> {{ activeLog.title }}
-    <button type="button" class="close" aria-label="Close" (click)="setActiveLog(null)">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="card-body">
-    <div>{{ activeLog.message }}</div>
-    <div *ngIf="activeLog.logTags.length > 0">
-      <strong>Tags:</strong>
-      <div *ngFor="let logTag of activeLog.logTags; let i = index" class="badge badge-secondary mr-1">
-        {{ tagMap.get(logTag.tagId).name }}
-        <span *ngIf="logTag.value !== ''">
-           = &quot;{{ logTag.value }}&quot;
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
+<app-log-details (close)="setActiveLog(null)" (update)="applyFilters()"
+                 [activeLog]="activeLog" [allStatuses]="allStatuses" [tagMap]="tagMap" [statusMap]="statusMap">
+</app-log-details>
 
 <div class="card">
   <div class="card-header">
