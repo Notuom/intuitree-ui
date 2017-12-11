@@ -9,7 +9,7 @@ export class ImportLog {
   id: number;
   title: string;
   message: string;
-  tags: Array<ImportLogTag>;
+  tags: ImportLogTag[];
   statusName: string;
 
 }

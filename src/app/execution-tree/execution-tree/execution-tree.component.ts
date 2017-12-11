@@ -83,7 +83,7 @@ export class ExecutionTreeComponent implements OnInit {
    * Apply the filters and retrieve the adequate data set for rendering.
    */
   applyFilters() {
-    let logs: Array<Log>, logIds: Array<number>;
+    let logs: Log[], logIds: number[];
     const completeLogTagMap: Map<number, LogTag[]> = new Map();
 
     if (this.execution !== null) {
@@ -94,7 +94,7 @@ export class ExecutionTreeComponent implements OnInit {
         // Get tags for this execution
         return this.db.tags
           .where('executionId').equals(this.execution.id).toArray();
-      }).then((queriedTags: Array<Tag>) => {
+      }).then((queriedTags: Tag[]) => {
 
         // Store tags in map
         this.allTags = queriedTags;
@@ -103,14 +103,14 @@ export class ExecutionTreeComponent implements OnInit {
         // Get statuses for this execution
         return this.db.statuses
           .where('executionId').equals(this.execution.id).toArray();
-      }).then((queriedStatuses: Array<Status>) => {
+      }).then((queriedStatuses: Status[]) => {
 
         // Store statuses in map
         this.allStatuses = queriedStatuses;
         queriedStatuses.forEach(status => this.statusMap.set(status.id, status));
 
         // Build query for logs according to specified filters
-        let logQuery: Promise<Array<Log>>;
+        let logQuery: Promise<Log[]>;
         if (this.filterStatus !== null) {
           // Execution ID + Status ID are specified
           logQuery = this.db.logs
@@ -124,13 +124,13 @@ export class ExecutionTreeComponent implements OnInit {
         }
 
         return logQuery;
-      }).then((queriedLogs: Array<Log>) => {
+      }).then((queriedLogs: Log[]) => {
         console.info('Queried logs', queriedLogs);
 
         logs = queriedLogs;
 
         // Retrieve Log IDs for annotated logs, if applicable
-        let annotationQuery: Promise<Array<Annotation>>;
+        let annotationQuery: Promise<Annotation[]>;
         if (this.filterAnnotated) {
           annotationQuery = this.db.annotations.toArray();
         } else {
@@ -138,7 +138,7 @@ export class ExecutionTreeComponent implements OnInit {
         }
 
         return annotationQuery;
-      }).then((queriedAnnotations: Array<Annotation>) => {
+      }).then((queriedAnnotations: Annotation[]) => {
         console.info('Queried annotations', queriedAnnotations);
         if (queriedAnnotations !== null) {
           const logsWithAnnotationIds = queriedAnnotations.map(annotation => annotation.logId);
@@ -151,7 +151,7 @@ export class ExecutionTreeComponent implements OnInit {
         return this.db.logTags
           .where('logId').anyOf(logIds)
           .toArray();
-      }).then((queriedLogTags: Array<LogTag>) => {
+      }).then((queriedLogTags: LogTag[]) => {
         console.info('Queried LogTags', queriedLogTags);
 
         // Store all filter TagValues by TagId in a map
@@ -228,7 +228,7 @@ export class ExecutionTreeComponent implements OnInit {
 
         // Find the missing parent logs in the database recursively (tangential promise chain)
         return this.recursiveFindLogParents(logs, logs, logIds);
-      }).then((returnedLogs: Array<Log>) => {
+      }).then((returnedLogs: Log[]) => {
         console.log('Returned Logs', returnedLogs);
 
         logs = returnedLogs;
@@ -257,13 +257,13 @@ export class ExecutionTreeComponent implements OnInit {
 
   /**
    * Recursive Promise function which searches for the missing parents and only fulfills when there are none left.
-   * @param {Array<Log>} searchLogs The logs which need to be searched for missing parents.
-   * @param {Array<Log>} allLogs All of the logs which are to be displayed when done.
-   * @param {Array<number>} allLogIds Log IDs for the above.
+   * @param {Log[]} searchLogs The logs which need to be searched for missing parents.
+   * @param {Log[]} allLogs All of the logs which are to be displayed when done.
+   * @param {number[]} allLogIds Log IDs for the above.
    * @returns {any} A Promise if there are still parents, otherwise all logs.
    */
-  recursiveFindLogParents(searchLogs: Array<Log>, allLogs: Array<Log>, allLogIds: Array<number>) {
-    const missingIds: Array<number> = [];
+  recursiveFindLogParents(searchLogs: Log[], allLogs: Log[], allLogIds: number[]) {
+    const missingIds: number[] = [];
 
     // Go through all logs and find the missing parents
     searchLogs.forEach(log => {

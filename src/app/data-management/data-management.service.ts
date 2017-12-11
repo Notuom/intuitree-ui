@@ -12,6 +12,8 @@ import {Tag} from '../shared/domain/tag';
 import {Log} from '../shared/domain/log';
 import {LogTag} from '../shared/domain/log-tag';
 import {Observable} from 'rxjs/Observable';
+import {ImportAnnotation} from './import-data/import-annotation';
+import {Annotation} from '../shared/domain/annotation';
 
 /**
  * Handles the import/export core logic.
@@ -33,8 +35,6 @@ export class DataManagementService {
 
       // TODO validate against JSON schema here to make sure everything is valid
       const cache = new ImportCache();
-
-      // TODO import annotations
 
       return Observable.fromPromise(
         Promise.resolve().then(() => {
@@ -65,6 +65,8 @@ export class DataManagementService {
         }).then(() => {
           return this.importLogTags(cache, importData.logs);
         }).then(() => {
+          return this.importAnnotations(cache, importData.annotations);
+        }).then(() => {
           alert('Import is complete!');
         }).catch(e => {
           console.error(e);
@@ -81,19 +83,19 @@ export class DataManagementService {
     return this.db.executions.add(new Execution(importExecution.title, importExecution.message));
   }
 
-  importStatuses(cache: ImportCache, importStatuses: Array<ImportStatus>) {
+  importStatuses(cache: ImportCache, importStatuses: ImportStatus[]) {
     return this.db.statuses.bulkAdd(
       importStatuses.map(importStatus => new Status(cache.executionId, importStatus.name, importStatus.color))
     );
   }
 
-  importTags(cache: ImportCache, importTags: Array<ImportTag>) {
+  importTags(cache: ImportCache, importTags: ImportTag[]) {
     return this.db.tags.bulkAdd(
       importTags.map(importTag => new Tag(cache.executionId, importTag.name))
     );
   }
 
-  importLogs(cache: ImportCache, importLogs: Array<ImportLog>) {
+  importLogs(cache: ImportCache, importLogs: ImportLog[]) {
     return this.db.logs.bulkAdd(
       importLogs.map(importLog => new Log(cache.executionId,
         // ParentID = 0 is a special value, but otherwise, transpose the parent's LogID
@@ -107,8 +109,8 @@ export class DataManagementService {
     );
   }
 
-  importLogTags(cache: ImportCache, importLogs: Array<ImportLog>) {
-    const logTags: Array<LogTag> = [];
+  importLogTags(cache: ImportCache, importLogs: ImportLog[]) {
+    const logTags: LogTag[] = [];
     importLogs.forEach(importLog => {
       importLog.tags.forEach(importLogTag => {
         logTags.push(new LogTag(cache.executionId,
@@ -119,6 +121,27 @@ export class DataManagementService {
     });
 
     return this.db.logTags.bulkAdd(logTags);
+  }
+
+  importAnnotations(cache: ImportCache, importAnnotations: ImportAnnotation[]) {
+    const annotations: Annotation[] = [];
+    importAnnotations.forEach(importAnnotation => {
+      annotations.push(new Annotation(cache.executionId,
+        importAnnotation.logId + cache.lastLogId,
+        cache.statusIdMap.get(importAnnotation.changedStatusFromName),
+        cache.statusIdMap.get(importAnnotation.changedStatusToName),
+        importAnnotation.message, importAnnotation.timestamp));
+    });
+
+    return this.db.annotations.bulkAdd(annotations);
+  }
+
+  /**
+   * Export an execution and its contents to a JSON file.
+   * @param {Execution} execution
+   */
+  exportExecutionToJson(execution: Execution) {
+
   }
 
 }

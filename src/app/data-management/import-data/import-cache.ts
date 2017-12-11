@@ -1,7 +1,6 @@
 /**
  * Cache class to keep statuses and tags for easier data binding during data import.
  */
-
 export class ImportCache {
 
   executionId: number;

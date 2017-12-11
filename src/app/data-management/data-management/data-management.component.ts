@@ -74,7 +74,9 @@ export class DataManagementComponent implements OnInit {
    * Handle when the Delete button is clicked.
    */
   deleteExecution() {
-    if (this.execution !== null) {
+    if (this.execution !== null
+      && confirm('Are you sure you want to remove all of the data for this execution? This is not reversible.')) {
+
       this.db.removeExecution(this.execution).subscribe(success => {
         console.info(success);
       }, error => {
