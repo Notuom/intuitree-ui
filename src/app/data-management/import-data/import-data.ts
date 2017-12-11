@@ -15,4 +15,12 @@ export class ImportData {
   logs: ImportLog[];
   annotations: ImportAnnotation[];
 
+  constructor(execution: ImportExecution, statuses: ImportStatus[], tags: ImportTag[], logs: ImportLog[], annotations: ImportAnnotation[]) {
+    this.execution = execution;
+    this.statuses = statuses;
+    this.tags = tags;
+    this.logs = logs;
+    this.annotations = annotations;
+  }
+
 }

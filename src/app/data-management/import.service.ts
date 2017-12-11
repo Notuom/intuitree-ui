@@ -16,10 +16,10 @@ import {ImportAnnotation} from './import-data/import-annotation';
 import {Annotation} from '../shared/domain/annotation';
 
 /**
- * Handles the import/export core logic.
+ * Handles the import core logic.
  */
 @Injectable()
-export class DataManagementService {
+export class ImportService {
 
   constructor(private db: DatabaseService) {
   }
@@ -134,14 +134,6 @@ export class DataManagementService {
     });
 
     return this.db.annotations.bulkAdd(annotations);
-  }
-
-  /**
-   * Export an execution and its contents to a JSON file.
-   * @param {Execution} execution
-   */
-  exportExecutionToJson(execution: Execution) {
-
   }
 
 }

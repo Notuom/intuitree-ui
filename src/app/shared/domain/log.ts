@@ -25,6 +25,7 @@ export class Log {
     if (typeof id !== 'undefined') {
       this.id = id;
     }
+
     this.status = null;
     this.logTags = [];
     this.highlight = false;

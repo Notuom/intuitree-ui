@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DatabaseService} from '../../shared/database/database.service';
-import {DataManagementService} from '../data-management.service';
+import {ImportService} from '../import.service';
 import {Execution} from '../../shared/domain/execution';
 import {Log} from '../../shared/domain/log';
 import {Status} from '../../shared/domain/status';
@@ -8,6 +8,7 @@ import {Tag} from '../../shared/domain/tag';
 import {LogTag} from '../../shared/domain/log-tag';
 import {Observable} from 'rxjs/Observable';
 import {Annotation} from '../../shared/domain/annotation';
+import {ExportService} from '../export.service';
 
 /**
  * Root component for the Data Management tab.
@@ -22,7 +23,7 @@ export class DataManagementComponent implements OnInit {
   allExecutions: Execution[];
   execution: Execution = null;
 
-  constructor(private db: DatabaseService, private dm: DataManagementService) {
+  constructor(private db: DatabaseService, private imp: ImportService, private exp: ExportService) {
   }
 
   /**
@@ -30,8 +31,14 @@ export class DataManagementComponent implements OnInit {
    */
   removeAllData() {
     if (confirm('Are you sure you want to remove all of the data? This is not reversible; data will have to be imported again.')) {
-      this.db.clearAll().subscribe(success => alert('All data has been removed.'),
-        error => alert('Error when deleting data: ' + error));
+      this.db.clearAll().subscribe(success => {
+          this.refreshExecutions();
+          alert('All data has been removed.');
+        },
+        error => {
+          console.error(error);
+          alert('Error when deleting data. See console for details.');
+        });
     }
   }
 
@@ -46,10 +53,12 @@ export class DataManagementComponent implements OnInit {
       const reader = new FileReader();
 
       reader.onload = (doneEvent: ProgressEvent) => {
-        this.dm.importJsonData((<FileReader>doneEvent.target).result).subscribe(success => {
+        this.imp.importJsonData((<FileReader>doneEvent.target).result).subscribe(success => {
 
         }, error => {
-
+          // TODO handle error
+          console.error(error);
+          alert('Error when importing file. See console for details.')
         }, () => {
           this.refreshExecutions();
         });
@@ -64,7 +73,7 @@ export class DataManagementComponent implements OnInit {
    */
   exportExecution() {
     if (this.execution !== null) {
-
+      this.exp.exportExecution(this.execution, prompt('Please set a name for the exported execution', this.execution.title));
     } else {
       alert('Please select an execution first.');
     }
@@ -90,6 +99,9 @@ export class DataManagementComponent implements OnInit {
     }
   }
 
+  /**
+   * Remove the selection from the execution dropdown and refresh its data from the database.
+   */
   refreshExecutions() {
     this.execution = null;
     this.db.executions.toArray(executions => {
@@ -148,7 +160,10 @@ export class DataManagementComponent implements OnInit {
           this.refreshExecutions();
           alert('Test data has been generated.');
         },
-        error => alert('Error when generating test data: ' + error));
+        error => {
+          console.error(error);
+          alert('Error when generating test data. See console for details.');
+        });
     });
   }
 

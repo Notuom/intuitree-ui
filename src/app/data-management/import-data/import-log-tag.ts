@@ -6,4 +6,9 @@ export class ImportLogTag {
   tagName: string;
   value: string;
 
+  constructor(tagName: string, value: string) {
+    this.tagName = tagName;
+    this.value = value;
+  }
+
 }
