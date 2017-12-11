@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DatabaseService} from '../../shared/database/database.service';
 import {DataManagementService} from '../data-management.service';
 import {Execution} from '../../shared/domain/execution';
@@ -17,7 +17,10 @@ import {Annotation} from '../../shared/domain/annotation';
   templateUrl: './data-management.component.html',
   styleUrls: ['./data-management.component.scss']
 })
-export class DataManagementComponent {
+export class DataManagementComponent implements OnInit {
+
+  allExecutions: Execution[];
+  execution: Execution = null;
 
   constructor(private db: DatabaseService, private dm: DataManagementService) {
   }
@@ -33,21 +36,63 @@ export class DataManagementComponent {
   }
 
   /**
-   * Handle when a file is selected
+   * Handle when a file is selected.
    * @param {Event} event
    */
-  handleFileImport(event: Event) {
+  handleImport(event: Event) {
     const files: FileList = (<HTMLInputElement>event.target).files;
 
     if (files.length > 0) {
       const reader = new FileReader();
 
       reader.onload = (doneEvent: ProgressEvent) => {
-        this.dm.importJsonData((<FileReader>doneEvent.target).result);
+        this.dm.importJsonData((<FileReader>doneEvent.target).result).subscribe(success => {
+
+        }, error => {
+
+        }, () => {
+          this.refreshExecutions();
+        });
       };
 
       reader.readAsText(files[0]);
     }
+  }
+
+  /**
+   * Handle when the Export button is clicked.
+   */
+  exportExecution() {
+    if (this.execution !== null) {
+
+    } else {
+      alert('Please select an execution first.');
+    }
+  }
+
+  /**
+   * Handle when the Delete button is clicked.
+   */
+  deleteExecution() {
+    if (this.execution !== null) {
+      this.db.removeExecution(this.execution).subscribe(success => {
+        console.info(success);
+      }, error => {
+        console.error(error);
+        alert('Error when deleting execution. See console for details.');
+      }, () => {
+        this.refreshExecutions();
+      });
+    } else {
+      alert('Please select an execution first.');
+    }
+  }
+
+  refreshExecutions() {
+    this.execution = null;
+    this.db.executions.toArray(executions => {
+      this.allExecutions = executions;
+    });
   }
 
   /**
@@ -97,9 +142,16 @@ export class DataManagementComponent {
         Observable.fromPromise(this.db.annotations.bulkAdd([
           new Annotation(1, 1, 2, 1, 'Changed the status because I wanted to.', 0)
         ]))
-      ).subscribe(success => alert('Test data has been generated.'),
+      ).subscribe(success => {
+          this.refreshExecutions();
+          alert('Test data has been generated.');
+        },
         error => alert('Error when generating test data: ' + error));
     });
+  }
+
+  ngOnInit() {
+    this.refreshExecutions();
   }
 
 }

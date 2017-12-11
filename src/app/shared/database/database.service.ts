@@ -46,6 +46,20 @@ export class DatabaseService extends Dexie {
   }
 
   /**
+   * Remove the specified Execution and all of the data related to it.
+   * @param {Execution} execution
+   */
+  removeExecution(execution: Execution) {
+    return Observable.forkJoin(
+      Observable.fromPromise(this.executions.where(':id').equals(execution.id).delete()),
+      Observable.fromPromise(this.statuses.where('executionId').equals(execution.id).delete()),
+      Observable.fromPromise(this.tags.where('executionId').equals(execution.id).delete()),
+      Observable.fromPromise(this.logs.where('executionId').equals(execution.id).delete()),
+      Observable.fromPromise(this.annotations.where('executionId').equals(execution.id).delete())
+    );
+  }
+
+  /**
    * Clear all tables contents and return an observable.
    * @returns {Observable<[any , any , any , any , any , any]>}
    */

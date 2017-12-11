@@ -3,19 +3,14 @@
     Data Management
   </div>
   <div class="card-body">
-    <p>Import a log file in order to view the execution tree in the
-      <a routerLink="/execution-tree">Execution Tree</a> tab.</p>
-    <p>Export a log file in order to save the annotations that were made when viewing the tree.</p>
+    <p>Import a log file in order to view the execution tree in the<a routerLink="/execution-tree">Execution Tree</a>
+      tab. You can also remove all data.</p>
 
     <label class="btn btn-primary btn-file">
       <i class="fa fa-upload"></i>
       Import
-      <input type="file" (change)="handleFileImport($event)">
+      <input type="file" (change)="handleImport($event)">
     </label>
-    <button class="btn btn-primary">
-      <i class="fa fa-download"></i>
-      Export
-    </button>
     <button (click)="removeAllData()" class="btn btn-danger">
       <i class="fa fa-remove"></i>
       Delete all data
@@ -24,5 +19,40 @@
       <i class="fa fa-rebel"></i>
       Generate test data
     </button>
+  </div>
+</div>
+
+<div class="card mt-sm-4">
+  <div class="card-header">
+    Execution Management
+  </div>
+  <div class="card-body">
+    <p>Select an execution you wish to manage. Export the execution to a log file in order to save the annotations that
+      were made when viewing the tree. Delete the execution in order to remove it from the execution tree view and purge
+      all of its data.</p>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <label for="filterExecution">Execution</label>
+        <select [(ngModel)]="execution" name="filterExecution" id="filterExecution"
+                class="form-control">
+          <option [ngValue]="null">Choose Execution...</option>
+          <option *ngFor="let execution of allExecutions" [ngValue]="execution">{{ execution.title }}</option>
+        </select>
+      </div>
+      <div class="col-sm-6" *ngIf="execution !== null">
+        <div>
+          Actions for selected execution
+        </div>
+        <button (click)="exportExecution()" class="btn btn-primary">
+          <i class="fa fa-download"></i>
+          Export to file
+        </button>
+        <button (click)="deleteExecution()" class="btn btn-danger">
+          <i class="fa fa-remove"></i>
+          Delete execution
+        </button>
+      </div>
+    </div>
   </div>
 </div>

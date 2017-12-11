@@ -31,7 +31,7 @@ export class ExecutionTreeComponent implements OnInit {
   statusMap: Map<number, Status> = new Map();
 
   // Filter state
-  filterExecution: Execution = null;
+  execution: Execution = null;
   selectedTagFilter: Tag = null;
   filterTagValues: TagValue[] = [];
   filterStatus: Status = null;
@@ -86,14 +86,14 @@ export class ExecutionTreeComponent implements OnInit {
     let logs: Array<Log>, logIds: Array<number>;
     const completeLogTagMap: Map<number, LogTag[]> = new Map();
 
-    if (this.filterExecution !== null) {
+    if (this.execution !== null) {
 
       // Start a promise chain
       Promise.resolve().then(() => {
 
         // Get tags for this execution
         return this.db.tags
-          .where('executionId').equals(this.filterExecution.id).toArray();
+          .where('executionId').equals(this.execution.id).toArray();
       }).then((queriedTags: Array<Tag>) => {
 
         // Store tags in map
@@ -102,7 +102,7 @@ export class ExecutionTreeComponent implements OnInit {
 
         // Get statuses for this execution
         return this.db.statuses
-          .where('executionId').equals(this.filterExecution.id).toArray();
+          .where('executionId').equals(this.execution.id).toArray();
       }).then((queriedStatuses: Array<Status>) => {
 
         // Store statuses in map
@@ -114,12 +114,12 @@ export class ExecutionTreeComponent implements OnInit {
         if (this.filterStatus !== null) {
           // Execution ID + Status ID are specified
           logQuery = this.db.logs
-            .where('[executionId+statusId]').equals([this.filterExecution.id, this.filterStatus.id])
+            .where('[executionId+statusId]').equals([this.execution.id, this.filterStatus.id])
             .toArray();
         } else {
           // Execution ID only is specified
           logQuery = this.db.logs
-            .where('executionId').equals(this.filterExecution.id)
+            .where('executionId').equals(this.execution.id)
             .toArray();
         }
 
@@ -222,8 +222,8 @@ export class ExecutionTreeComponent implements OnInit {
 
         // Add Execution to tree as root node TODO
         if (logs.length > 0) {
-          logs.unshift(new Log(this.filterExecution.id, null, null, this.filterExecution.title,
-            'This is the root node for ' + this.filterExecution.title, 0));
+          logs.unshift(new Log(this.execution.id, null, null, this.execution.title,
+            'This is the root node for ' + this.execution.title, 0));
         }
 
         // Find the missing parent logs in the database recursively (tangential promise chain)

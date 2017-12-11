@@ -24,7 +24,7 @@
             Execution
             <i class="fa fa-question-circle" tooltip="Choose which execution is being analyzed."></i>
           </label>
-          <select [(ngModel)]="filterExecution" (change)="applyFilters()" name="filterExecution" id="filterExecution"
+          <select [(ngModel)]="execution" (change)="applyFilters()" name="filterExecution" id="filterExecution"
                   class="form-control">
             <option [ngValue]="null">Choose Execution...</option>
             <option *ngFor="let execution of allExecutions" [ngValue]="execution">{{ execution.title }}</option>
@@ -35,6 +35,8 @@
             Status
             <i class="fa fa-question-circle" tooltip="Choose which log status to display."></i>
           </label>
+
+          <!-- FIXME need to figure out why the status won't stay selected... -->
           <select [(ngModel)]="filterStatus" (change)="applyFilters()" name="filterStatus" id="filterStatus"
                   class="form-control">
             <option [ngValue]="null">All statuses</option>
@@ -47,8 +49,7 @@
           <div class="form-check form-check-label-height">
             <label class="form-check-label">
               <input [(ngModel)]="filterAnnotated" (change)="applyFilters()" name="filterAnnotated" id="filterAnnotated"
-                     type="checkbox"
-                     class="form-check-input">
+                     type="checkbox" class="form-check-input">
               Annotated
               <i class="fa fa-question-circle" tooltip="Only display logs which have been annotated."></i>
             </label>
@@ -98,15 +99,15 @@
     <i class="fa fa-question-circle" tooltip="Click on a log node to expand. Click on the * icon to show details."></i>
   </div>
   <div class="card-body">
-    <app-tree-view *ngIf="filterExecution !== null && viewLogs.length > 0"
+    <app-tree-view *ngIf="execution !== null && viewLogs.length > 0"
                    [mode]="viewMode" [logs]="viewLogs" (detailsToggled)="setActiveLog($event)">
     </app-tree-view>
-    <div *ngIf="allExecutions.length > 0 && filterExecution !== null && viewLogs.length === 0"
+    <div *ngIf="allExecutions.length > 0 && execution !== null && viewLogs.length === 0"
          class="alert alert-info mb-0">
       <i class="fa fa-info-circle"></i>
       The search returned no results.
     </div>
-    <div *ngIf="allExecutions.length > 0 && filterExecution === null" class="alert alert-info mb-0">
+    <div *ngIf="allExecutions.length > 0 && execution === null" class="alert alert-info mb-0">
       <i class="fa fa-info-circle"></i>
       Select an execution in the Search Filters in order to view its tree.
     </div>

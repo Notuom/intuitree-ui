@@ -51,7 +51,7 @@ export class LogDetailsComponent implements OnChanges {
 
   resetAddAnnotation() {
     this.addingAnnotation = false;
-    this.addAnnotationStatus = null;
+    this.addAnnotationStatus = this.activeLog.status;
     this.addAnnotationMessage = '';
   }
 
@@ -62,7 +62,7 @@ export class LogDetailsComponent implements OnChanges {
       this.annotations = [];
       this.resetAddAnnotation();
       this.db.annotations
-        .where('logId').equals((<Log>changes['activeLog'].currentValue).id).reverse()
+        .where('logId').equals(this.activeLog.id).reverse()
         .toArray().then(queriedAnnotations => this.annotations = queriedAnnotations)
     }
   }

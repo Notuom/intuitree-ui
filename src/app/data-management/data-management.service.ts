@@ -11,6 +11,7 @@ import {Status} from '../shared/domain/status';
 import {Tag} from '../shared/domain/tag';
 import {Log} from '../shared/domain/log';
 import {LogTag} from '../shared/domain/log-tag';
+import {Observable} from 'rxjs/Observable';
 
 /**
  * Handles the import/export core logic.
@@ -35,41 +36,41 @@ export class DataManagementService {
 
       // TODO import annotations
 
-      Promise.resolve().then(() => {
-        return this.importExecution(importData.execution);
-      }).then((executionId: number) => {
-        cache.executionId = executionId;
-        return this.importStatuses(cache, importData.statuses);
-      }).then((lastStatusId: number) => {
-        importData.statuses.reverse().forEach(importStatus => {
-          cache.statusIdMap.set(importStatus.name, lastStatusId--);
-        });
-        return this.importTags(cache, importData.tags);
-      }).then((lastTagId: number) => {
-        importData.tags.reverse().forEach(importTag => {
-          cache.tagIdMap.set(importTag.name, lastTagId--);
-        });
-        console.log('Cache', cache.statusIdMap, cache.tagIdMap);
-        return this.db.logs.orderBy(':id').last();
-      }).then((lastLog: Log) => {
-        if (typeof lastLog !== 'undefined') {
-          // There are logs in the database
-          cache.lastLogId = lastLog.id;
-        } else {
-          // There are no logs in the database
-          cache.lastLogId = 0;
-        }
-        return this.importLogs(cache, importData.logs);
-      }).then(() => {
-        return this.importLogTags(cache, importData.logs);
-      }).then(() => {
-        alert('Import is complete!');
-      }).catch(e => {
-        console.error(e);
-        alert('An error occured during import. View console for more details.');
-      });
-
-      console.info(importData);
+      return Observable.fromPromise(
+        Promise.resolve().then(() => {
+          return this.importExecution(importData.execution);
+        }).then((executionId: number) => {
+          cache.executionId = executionId;
+          return this.importStatuses(cache, importData.statuses);
+        }).then((lastStatusId: number) => {
+          importData.statuses.reverse().forEach(importStatus => {
+            cache.statusIdMap.set(importStatus.name, lastStatusId--);
+          });
+          return this.importTags(cache, importData.tags);
+        }).then((lastTagId: number) => {
+          importData.tags.reverse().forEach(importTag => {
+            cache.tagIdMap.set(importTag.name, lastTagId--);
+          });
+          console.log('Cache', cache.statusIdMap, cache.tagIdMap);
+          return this.db.logs.orderBy(':id').last();
+        }).then((lastLog: Log) => {
+          if (typeof lastLog !== 'undefined') {
+            // There are logs in the database
+            cache.lastLogId = lastLog.id;
+          } else {
+            // There are no logs in the database
+            cache.lastLogId = 0;
+          }
+          return this.importLogs(cache, importData.logs);
+        }).then(() => {
+          return this.importLogTags(cache, importData.logs);
+        }).then(() => {
+          alert('Import is complete!');
+        }).catch(e => {
+          console.error(e);
+          alert('An error occured during import. View console for more details.');
+        })
+      );
     } catch (e) {
       alert('The file couldn\'t be loaded: format was not JSON.');
       console.error(e);
