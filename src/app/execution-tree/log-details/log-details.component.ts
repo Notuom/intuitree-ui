@@ -24,7 +24,7 @@ export class LogDetailsComponent implements OnChanges {
 
   addingAnnotation = false;
   addAnnotationStatus: Status = null;
-  addAnnotationMessage: string = '';
+  addAnnotationMessage = '';
 
   constructor(private db: DatabaseService) {
   }
@@ -46,10 +46,10 @@ export class LogDetailsComponent implements OnChanges {
     this.db.logs.update(this.activeLog.id, {statusId: this.addAnnotationStatus.id})
       .then(() => this.update.emit());
 
-    this.resetAddAnnotation();
+    this.resetAnnotation();
   }
 
-  resetAddAnnotation() {
+  resetAnnotation() {
     this.addingAnnotation = false;
     this.addAnnotationStatus = this.activeLog.status;
     this.addAnnotationMessage = '';
@@ -60,10 +60,10 @@ export class LogDetailsComponent implements OnChanges {
       console.info('statuses', this.statusMap);
       // Active Log has changed: retrieve its annotations
       this.annotations = [];
-      this.resetAddAnnotation();
+      this.resetAnnotation();
       this.db.annotations
         .where('logId').equals(this.activeLog.id).reverse()
-        .toArray().then(queriedAnnotations => this.annotations = queriedAnnotations)
+        .toArray().then(queriedAnnotations => this.annotations = queriedAnnotations);
     }
   }
 

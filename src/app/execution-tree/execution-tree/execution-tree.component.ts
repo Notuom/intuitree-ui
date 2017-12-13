@@ -255,6 +255,14 @@ export class ExecutionTreeComponent implements OnInit {
     }
   }
 
+  setActiveLog(activeLog: Log) {
+    this.activeLog = activeLog;
+  }
+
+  ngOnInit() {
+    this.fetchFilterData();
+  }
+
   /**
    * Recursive Promise function which searches for the missing parents and only fulfills when there are none left.
    * @param {Log[]} searchLogs The logs which need to be searched for missing parents.
@@ -262,7 +270,7 @@ export class ExecutionTreeComponent implements OnInit {
    * @param {number[]} allLogIds Log IDs for the above.
    * @returns {any} A Promise if there are still parents, otherwise all logs.
    */
-  recursiveFindLogParents(searchLogs: Log[], allLogs: Log[], allLogIds: number[]) {
+  private recursiveFindLogParents(searchLogs: Log[], allLogs: Log[], allLogIds: number[]) {
     const missingIds: number[] = [];
 
     // Go through all logs and find the missing parents
@@ -285,14 +293,6 @@ export class ExecutionTreeComponent implements OnInit {
       allLogIds = allLogIds.concat(missingLogs.map(missingLog => missingLog.id));
       return this.recursiveFindLogParents(missingLogs, allLogs, allLogIds);
     });
-  }
-
-  ngOnInit() {
-    this.fetchFilterData();
-  }
-
-  setActiveLog(activeLog: Log) {
-    this.activeLog = activeLog;
   }
 
 }

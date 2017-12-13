@@ -3,6 +3,7 @@ import {Log} from '../../shared/domain/log';
 import * as d3 from 'd3';
 import {HierarchyNode} from 'd3-hierarchy';
 import {Status} from '../../shared/domain/status';
+import {BaseType, Selection} from 'd3-selection';
 
 @Component({
   selector: 'app-tree-view',
@@ -21,17 +22,17 @@ export class TreeViewComponent implements OnChanges {
 
   // D3 list-related variables
   private margin = {top: 12, right: 2, bottom: 2, left: 2};
-  private elementWidth;
+  private elementWidth: number;
   private barHeight = 20;
-  private barWidth;
-  private i = 0;
+  private barWidth: number;
+  private currentLogIndex = 0;
   private duration = 400;
   private diagonal = d3.linkHorizontal()
     .x((d: any) => d.y)
     .y((d: any) => d.x);
   private svg: any;
   private svgGroup: any;
-  private root;
+  private root: any;
 
   // Log which is sent to the parent component to show its details
   private activeLog: Log = null;
@@ -117,7 +118,7 @@ export class TreeViewComponent implements OnChanges {
 
     // Update the nodes…
     const node = this.svgGroup.selectAll('.node')
-      .data(nodes, (d: any) => d.id || (d.id = ++this.i));
+      .data(nodes, (d: any) => d.id || (d.id = ++this.currentLogIndex));
 
     const nodeEnter = node.enter().append('g')
       .attr('transform', d => 'translate(' + source.y0 + ',' + source.x0 + ')')
@@ -203,21 +204,21 @@ export class TreeViewComponent implements OnChanges {
     });
   }
 
-  private toggle(d: any) {
-    console.info('Toggle called', d);
+  private toggle(node: any) {
+    console.info('Toggle called', node);
 
-    if (d.children) {
-      d._children = d.children;
-      d.children = null;
+    if (node.children) {
+      node._children = node.children;
+      node.children = null;
     } else {
-      d.children = d._children;
-      d._children = null;
+      node.children = node._children;
+      node._children = null;
     }
-    this.update(d);
+    this.update(node);
   }
 
-  private details(d: any) {
-    this.activeLog = d.data;
+  private details(node: any) {
+    this.activeLog = node.data;
     this.detailsToggled.emit(this.activeLog);
     console.info('Details', this.activeLog);
   }

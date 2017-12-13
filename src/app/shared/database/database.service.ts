@@ -33,7 +33,7 @@ export class DatabaseService extends Dexie {
       statuses: '++id, executionId, name, color',
       tags: '++id, executionId, name',
       logs: '++id, executionId, parentId, statusId, title, message, [executionId+statusId]',
-      annotations: '++id, executionId, logId, changedStatusId, message, timestamp',
+      annotations: '++id, executionId, logId, changedStatusFromId, changedStatusToId, message, timestamp',
       logTags: '++id, logId, tagId, value'
     });
 

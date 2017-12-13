@@ -79,23 +79,23 @@ export class ImportService {
     }
   }
 
-  importExecution(importExecution: ImportExecution) {
+  private importExecution(importExecution: ImportExecution) {
     return this.db.executions.add(new Execution(importExecution.title, importExecution.message));
   }
 
-  importStatuses(cache: ImportCache, importStatuses: ImportStatus[]) {
+  private importStatuses(cache: ImportCache, importStatuses: ImportStatus[]) {
     return this.db.statuses.bulkAdd(
       importStatuses.map(importStatus => new Status(cache.executionId, importStatus.name, importStatus.color))
     );
   }
 
-  importTags(cache: ImportCache, importTags: ImportTag[]) {
+  private importTags(cache: ImportCache, importTags: ImportTag[]) {
     return this.db.tags.bulkAdd(
       importTags.map(importTag => new Tag(cache.executionId, importTag.name))
     );
   }
 
-  importLogs(cache: ImportCache, importLogs: ImportLog[]) {
+  private importLogs(cache: ImportCache, importLogs: ImportLog[]) {
     return this.db.logs.bulkAdd(
       importLogs.map(importLog => new Log(cache.executionId,
         // ParentID = 0 is a special value, but otherwise, transpose the parent's LogID
@@ -109,7 +109,7 @@ export class ImportService {
     );
   }
 
-  importLogTags(cache: ImportCache, importLogs: ImportLog[]) {
+  private importLogTags(cache: ImportCache, importLogs: ImportLog[]) {
     const logTags: LogTag[] = [];
     importLogs.forEach(importLog => {
       importLog.tags.forEach(importLogTag => {
@@ -123,7 +123,7 @@ export class ImportService {
     return this.db.logTags.bulkAdd(logTags);
   }
 
-  importAnnotations(cache: ImportCache, importAnnotations: ImportAnnotation[]) {
+  private importAnnotations(cache: ImportCache, importAnnotations: ImportAnnotation[]) {
     const annotations: Annotation[] = [];
     importAnnotations.forEach(importAnnotation => {
       annotations.push(new Annotation(cache.executionId,
