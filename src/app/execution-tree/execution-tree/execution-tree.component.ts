@@ -208,6 +208,7 @@ export class ExecutionTreeComponent implements OnInit {
         });
 
         // Only keep logs for which all queried LogTags were fulfilled
+        // FIXME if there are no tags on the log, currently, it is not filtered out.
         logs = logs.filter(log => {
           console.info('Log fulfilled vs complete', log.id, fulfilledLogTagMap.get(log.id), completeLogTagMap.get(log.id));
           return !fulfilledLogTagMap.has(log.id) && !completeLogTagMap.has(log.id) ||
@@ -220,10 +221,10 @@ export class ExecutionTreeComponent implements OnInit {
           return log.id;
         });
 
-        // Add Execution to tree as root node TODO
+        // Add Execution to tree as root node
         if (logs.length > 0) {
           logs.unshift(new Log(this.execution.id, null, null, this.execution.title,
-            'This is the root node for ' + this.execution.title, 0));
+            this.execution.message, 0));
         }
 
         // Find the missing parent logs in the database recursively (tangential promise chain)

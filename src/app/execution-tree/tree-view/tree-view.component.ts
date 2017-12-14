@@ -64,7 +64,6 @@ export class TreeViewComponent implements OnChanges {
   ngOnChanges() {
     console.info('ngOnChanges called');
     this.elementWidth = this.el.nativeElement.offsetWidth;
-    // TODO only re-render if the logs have changed?
     // Only render if there are logs, otherwise this component will not be shown (see ngIf on parent component).
     if (this.logs.length > 0) {
       this.render();

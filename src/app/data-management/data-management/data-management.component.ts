@@ -72,7 +72,10 @@ export class DataManagementComponent implements OnInit {
    */
   exportExecution() {
     if (this.execution !== null) {
-      this.exp.exportExecution(this.execution, prompt('Please set a name for the exported execution', this.execution.title));
+      const newTitle = prompt('Please set a name for the exported execution', this.execution.title);
+      if (newTitle !== null) {
+        this.exp.exportExecution(this.execution, newTitle);
+      }
     } else {
       alert('Please select an execution first.');
     }

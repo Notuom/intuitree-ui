@@ -40,7 +40,6 @@ export class ImportService {
     try {
       const importData: ImportData = JSON.parse(jsonString);
 
-      // TODO validate against JSON schema here to make sure everything is valid
       if (!this.validate(importData)) {
         return Observable.throw({
           _message: 'Invalid JSON file. Complete error log from validator follows.',
