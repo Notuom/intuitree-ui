@@ -38,11 +38,10 @@ export class DataManagementComponent implements OnInit {
 
       reader.onload = (doneEvent: ProgressEvent) => {
         this.imp.importJsonData((<FileReader>doneEvent.target).result).subscribe(success => {
-
+          alert('Import is complete!');
         }, error => {
-          // TODO handle error
           console.error(error);
-          alert('Error when importing file. See console for details.');
+          alert('An error occured during import. View console for more details.');
         }, () => {
           this.refreshExecutions();
         });

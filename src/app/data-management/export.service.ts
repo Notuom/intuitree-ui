@@ -34,14 +34,14 @@ export class ExportService {
         console.info('Exported Statuses', statuses);
         statuses.forEach(status => {
           exportCache.statusNameMap.set(status.id, status.name);
-          exportCache.exportStatuses.push(new ImportStatus(status.name, status.color));
+          exportCache.statuses.push(new ImportStatus(status.name, status.color));
         });
         return this.db.tags.where('executionId').equals(execution.id).toArray();
       }).then(tags => {
         console.info('Exported Tags', tags);
         tags.forEach(tag => {
           exportCache.tagNameMap.set(tag.id, tag.name);
-          exportCache.exportTags.push(new ImportTag(tag.name));
+          exportCache.tags.push(new ImportTag(tag.name));
         });
         return this.db.logs.where('executionId').equals(execution.id).sortBy(':id');
       }).then(logs => {
@@ -53,7 +53,7 @@ export class ExportService {
             const importLog = new ImportLog(log.parentId - idShift, log.id - idShift, log.title,
               log.message, exportCache.statusNameMap.get(log.statusId));
             exportCache.logIdMap.set(log.id, importLog);
-            exportCache.exportLogs.push(importLog);
+            exportCache.logs.push(importLog);
             logIds.push(log.id);
           });
           return this.db.logTags.where('logId').anyOf(logIds).toArray();
@@ -66,7 +66,7 @@ export class ExportService {
         return this.db.annotations.where('executionId').equals(execution.id).toArray();
       }).then(annotations => {
         console.info('Exported annotations', annotations);
-        annotations.map(annotation => new ImportAnnotation(annotation.logId,
+        exportCache.annotations = annotations.map(annotation => new ImportAnnotation(annotation.logId,
           exportCache.statusNameMap.get(annotation.changedStatusFromId),
           exportCache.statusNameMap.get(annotation.changedStatusToId),
           annotation.message, annotation.timestamp

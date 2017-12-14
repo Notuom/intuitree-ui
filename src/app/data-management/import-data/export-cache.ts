@@ -13,10 +13,10 @@ export class ExportCache {
   tagNameMap: Map<number, string> = new Map();
   logIdMap: Map<number, ImportLog> = new Map();
 
-  exportStatuses: ImportStatus[] = [];
-  exportTags: ImportTag[] = [];
-  exportLogs: ImportLog[] = [];
-  exportAnnotations: ImportAnnotation[] = [];
+  statuses: ImportStatus[] = [];
+  tags: ImportTag[] = [];
+  logs: ImportLog[] = [];
+  annotations: ImportAnnotation[] = [];
 
   constructor(exportExecution: ImportExecution) {
     this.exportExecution = exportExecution;
@@ -27,8 +27,8 @@ export class ExportCache {
    * @returns {ImportData}
    */
   toImportData(): ImportData {
-    return new ImportData(this.exportExecution, this.exportStatuses, this.exportTags,
-      this.exportLogs, this.exportAnnotations);
+    return new ImportData(this.exportExecution, this.statuses, this.tags,
+      this.logs, this.annotations);
   }
 
 }

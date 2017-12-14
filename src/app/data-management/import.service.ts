@@ -1,4 +1,7 @@
 import {Injectable} from '@angular/core';
+import 'rxjs/add/observable/throw';
+import * as ajv from 'ajv';
+
 import {ImportCache} from './import-data/import-cache';
 import {ImportExecution} from './import-data/import-execution';
 import {ImportData} from './import-data/import-data';
@@ -15,25 +18,36 @@ import {Observable} from 'rxjs/Observable';
 import {ImportAnnotation} from './import-data/import-annotation';
 import {Annotation} from '../shared/domain/annotation';
 
+import schema from './import-data/logs-schema';
+
 /**
  * Handles the import core logic.
  */
 @Injectable()
 export class ImportService {
 
+  validate = ajv().compile(schema);
+
   constructor(private db: DatabaseService) {
+    console.info('SCHEMA', schema);
   }
 
   /**
    * Validate and import from the JSON-based file Intuitree file format.
    * @param {string} jsonString a string representation of the json data to import
    */
-  importJsonData(jsonString: string) {
-    console.info(jsonString.length);
+  importJsonData(jsonString: string): Observable<any> {
     try {
       const importData: ImportData = JSON.parse(jsonString);
 
       // TODO validate against JSON schema here to make sure everything is valid
+      if (!this.validate(importData)) {
+        return Observable.throw({
+          _message: 'Invalid JSON file. Complete error log from validator follows.',
+          errors: this.validate.errors
+        });
+      }
+
       const cache = new ImportCache();
 
       return Observable.fromPromise(
@@ -51,7 +65,6 @@ export class ImportService {
           importData.tags.reverse().forEach(importTag => {
             cache.tagIdMap.set(importTag.name, lastTagId--);
           });
-          console.log('Cache', cache.statusIdMap, cache.tagIdMap);
           return this.db.logs.orderBy(':id').last();
         }).then((lastLog: Log) => {
           if (typeof lastLog !== 'undefined') {
@@ -65,15 +78,18 @@ export class ImportService {
         }).then(() => {
           return this.importLogTags(cache, importData.logs);
         }).then(() => {
-          return this.importAnnotations(cache, importData.annotations);
-        }).then(() => {
-          alert('Import is complete!');
-        }).catch(e => {
-          console.error(e);
-          alert('An error occured during import. View console for more details.');
+
+          // Annotations are optional, only present when exported from the application and not the library
+          if ((<ImportData>importData).annotations) {
+            return this.importAnnotations(cache, importData.annotations);
+          } else {
+            return Promise.resolve(0);
+          }
         })
       );
-    } catch (e) {
+    }
+    catch
+      (e) {
       alert('The file couldn\'t be loaded: format was not JSON.');
       console.error(e);
     }

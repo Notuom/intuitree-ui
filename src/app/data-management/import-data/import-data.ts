@@ -13,9 +13,9 @@ export class ImportData {
   statuses: ImportStatus[];
   tags: ImportTag[];
   logs: ImportLog[];
-  annotations: ImportAnnotation[];
+  annotations?: ImportAnnotation[];
 
-  constructor(execution: ImportExecution, statuses: ImportStatus[], tags: ImportTag[], logs: ImportLog[], annotations: ImportAnnotation[]) {
+  constructor(execution: ImportExecution, statuses: ImportStatus[], tags: ImportTag[], logs: ImportLog[], annotations: ImportAnnotation[] = []) {
     this.execution = execution;
     this.statuses = statuses;
     this.tags = tags;
