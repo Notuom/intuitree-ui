@@ -154,66 +154,71 @@ export class ExecutionTreeComponent implements OnInit {
       }).then((queriedLogTags: LogTag[]) => {
         console.info('Queried LogTags', queriedLogTags);
 
-        // Store all filter TagValues by TagId in a map
-        const filterTagValueMap: Map<number, TagValue[]> = new Map();
+        // If there are tag filters, filter the current logs by their tags.
         if (this.filterTagValues.length > 0) {
+
+          // Store all filter TagValues by TagId in a map
+          const filterTagValueMap: Map<number, TagValue[]> = new Map();
+
           this.filterTagValues.forEach(tagValue => {
             if (!filterTagValueMap.has(tagValue.tag.id)) {
               filterTagValueMap.set(tagValue.tag.id, []);
             }
             filterTagValueMap.get(tagValue.tag.id).push(tagValue);
           });
-        }
-        console.info('filterTagValueMap', filterTagValueMap);
+          console.info('filterTagValueMap', filterTagValueMap);
 
-        // Store all LogTags retrieved by LogId in a map
-        const fulfilledLogTagMap: Map<number, LogTag[]> = new Map();
-        queriedLogTags.forEach(logTag => {
+          // Store all LogTags retrieved by LogId in a map
+          const fulfilledLogTagMap: Map<number, LogTag[]> = new Map();
+          queriedLogTags.forEach(logTag => {
 
-          // Corresponding LogId not in maps : add empty array to maps
-          if (!completeLogTagMap.has(logTag.logId)) {
-            completeLogTagMap.set(logTag.logId, []);
-            fulfilledLogTagMap.set(logTag.logId, []);
-          }
+            // Corresponding LogId not in maps : add empty array to maps
+            if (!completeLogTagMap.has(logTag.logId)) {
+              completeLogTagMap.set(logTag.logId, []);
+              fulfilledLogTagMap.set(logTag.logId, []);
+            }
 
-          // Flag which indicates if the current LogTag matches the search criteria
-          let logTagFulfilled: boolean;
+            // Flag which indicates if the current LogTag matches the search criteria
+            let logTagFulfilled: boolean;
 
-          if (this.filterTagValues.length > 0) {
+            if (this.filterTagValues.length > 0) {
 
-            // There are filters for TagValues in general, so this entry must be filtered out if it doesn't match
-            logTagFulfilled = false;
+              // There are filters for TagValues in general, so this entry must be filtered out if it doesn't match
+              logTagFulfilled = false;
 
-            if (filterTagValueMap.has(logTag.tagId)) {
+              if (filterTagValueMap.has(logTag.tagId)) {
 
-              // Retrieve all values that can be matched in order for this LogTag to match the criteria
-              const filterTagValuesForTag = filterTagValueMap.get(logTag.tagId);
+                // Retrieve all values that can be matched in order for this LogTag to match the criteria
+                const filterTagValuesForTag = filterTagValueMap.get(logTag.tagId);
 
-              // At least one of the tag values specified for this tag filter is included in the current LogTag's value
-              for (let i = 0; i < filterTagValuesForTag.length; i++) {
-                if (logTag.value === '' || logTag.value.toLowerCase().includes(filterTagValuesForTag[i].value.toLowerCase())) {
-                  logTagFulfilled = true;
-                  break;
+                // At least one of the tag values specified for this tag filter is included in the current LogTag's value
+                for (let i = 0; i < filterTagValuesForTag.length; i++) {
+                  if (logTag.value === '' // TODO is this legit?
+                    || logTag.value.toLowerCase().includes(filterTagValuesForTag[i].value.toLowerCase())) {
+
+                    logTagFulfilled = true;
+                    break;
+                  }
                 }
               }
+            } else {
+              logTagFulfilled = true;
             }
-          } else {
-            logTagFulfilled = true;
-          }
 
-          completeLogTagMap.get(logTag.logId).push(logTag);
-          if (logTagFulfilled) {
-            fulfilledLogTagMap.get(logTag.logId).push(logTag);
-          }
-        });
+            completeLogTagMap.get(logTag.logId).push(logTag);
+            if (logTagFulfilled) {
+              fulfilledLogTagMap.get(logTag.logId).push(logTag);
+            }
+          });
 
-        // Only keep logs for which all queried LogTags were fulfilled
-        // FIXME if there are no tags on the log, currently, it is not filtered out.
-        logs = logs.filter(log => {
-          console.info('Log fulfilled vs complete', log.id, fulfilledLogTagMap.get(log.id), completeLogTagMap.get(log.id));
-          return !fulfilledLogTagMap.has(log.id) && !completeLogTagMap.has(log.id) ||
-            fulfilledLogTagMap.get(log.id).length === completeLogTagMap.get(log.id).length;
-        });
+          // Only keep logs for which all queried LogTags were fulfilled
+          logs = logs.filter(log => {
+            console.info('Log fulfilled vs complete', log.id, fulfilledLogTagMap.get(log.id), completeLogTagMap.get(log.id));
+
+            // The current log has tags and it has at least 1 fulfilled tag
+            return fulfilledLogTagMap.has(log.id) && fulfilledLogTagMap.get(log.id).length > 0;
+          });
+        }
 
         // Mark the current logs as highlighted since they are the search results and keep their IDs in logIds
         logIds = logs.map(log => {
@@ -240,7 +245,7 @@ export class ExecutionTreeComponent implements OnInit {
           log.logTags = completeLogTagMap.get(log.id) || [];
         });
 
-        // Set current logs to update data-binded tree
+        // Set current logs to update data-bound tree
         this.viewLogs = logs;
       }).catch(reject => {
         console.error(reject);
