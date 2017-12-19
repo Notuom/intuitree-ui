@@ -18,8 +18,19 @@ export class ExportCache {
   logs: ImportLog[] = [];
   annotations: ImportAnnotation[] = [];
 
+  idShift = 0;
+
   constructor(exportExecution: ImportExecution) {
     this.exportExecution = exportExecution;
+  }
+
+  /**
+   * Return a shifted logId, respecting the fact that ID 0 is a special value.
+   * @param {number} logId
+   * @returns {number | number}
+   */
+  shiftLogId(logId: number) {
+    return logId > 0 ? logId - this.idShift : 0;
   }
 
   /**

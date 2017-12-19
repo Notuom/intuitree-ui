@@ -4,7 +4,6 @@ import {Execution} from '../shared/domain/execution';
 import {ImportExecution} from './import-data/import-execution';
 
 import {saveAs} from 'file-saver';
-import {ImportData} from './import-data/import-data';
 import {ImportStatus} from './import-data/import-status';
 import {ImportTag} from './import-data/import-tag';
 import {ImportLog} from './import-data/import-log';
@@ -43,14 +42,22 @@ export class ExportService {
           exportCache.tagNameMap.set(tag.id, tag.name);
           exportCache.tags.push(new ImportTag(tag.name));
         });
-        return this.db.logs.where('executionId').equals(execution.id).sortBy(':id');
+        return this.db.logs.where('executionId').equals(execution.id).toArray();
       }).then(logs => {
           console.info('Exported Logs', logs);
           const logIds = [];
+
+          // Get lowest Log ID
+          let minLogId = Number.MAX_SAFE_INTEGER;
+          logs.forEach(log => minLogId = Math.min(minLogId, log.id));
+
           // Shift all IDs by the first ID so that the first Log has ID 1 in the exported file
-          const idShift = logs[0].id - 1;
+          exportCache.idShift = minLogId - 1;
+
           logs.forEach(log => {
-            const importLog = new ImportLog(log.parentId - idShift, log.id - idShift, log.title,
+            const importLog = new ImportLog(exportCache.shiftLogId(log.parentId),
+              exportCache.shiftLogId(log.id),
+              log.title,
               log.message, exportCache.statusNameMap.get(log.statusId));
             exportCache.logIdMap.set(log.id, importLog);
             exportCache.logs.push(importLog);
@@ -66,7 +73,7 @@ export class ExportService {
         return this.db.annotations.where('executionId').equals(execution.id).toArray();
       }).then(annotations => {
         console.info('Exported annotations', annotations);
-        exportCache.annotations = annotations.map(annotation => new ImportAnnotation(annotation.logId,
+        exportCache.annotations = annotations.map(annotation => new ImportAnnotation(exportCache.shiftLogId(annotation.logId),
           exportCache.statusNameMap.get(annotation.changedStatusFromId),
           exportCache.statusNameMap.get(annotation.changedStatusToId),
           annotation.message, annotation.timestamp
