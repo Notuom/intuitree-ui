@@ -30,21 +30,18 @@ export class ExportService {
       Promise.resolve().then(() => {
         return this.db.statuses.where('executionId').equals(execution.id).toArray();
       }).then(statuses => {
-        console.info('Exported Statuses', statuses);
         statuses.forEach(status => {
           exportCache.statusNameMap.set(status.id, status.name);
           exportCache.statuses.push(new ImportStatus(status.name, status.color));
         });
         return this.db.tags.where('executionId').equals(execution.id).toArray();
       }).then(tags => {
-        console.info('Exported Tags', tags);
         tags.forEach(tag => {
           exportCache.tagNameMap.set(tag.id, tag.name);
           exportCache.tags.push(new ImportTag(tag.name));
         });
         return this.db.logs.where('executionId').equals(execution.id).toArray();
       }).then(logs => {
-          console.info('Exported Logs', logs);
           const logIds = [];
 
           // Get lowest Log ID
@@ -66,13 +63,11 @@ export class ExportService {
           return this.db.logTags.where('logId').anyOf(logIds).toArray();
         }
       ).then(logTags => {
-        console.info('Exported LogTags', logTags);
         logTags.forEach(logTag => {
           exportCache.logIdMap.get(logTag.logId).tags.push(new ImportLogTag(exportCache.tagNameMap.get(logTag.tagId), logTag.value));
         });
         return this.db.annotations.where('executionId').equals(execution.id).toArray();
       }).then(annotations => {
-        console.info('Exported annotations', annotations);
         exportCache.annotations = annotations.map(annotation => new ImportAnnotation(exportCache.shiftLogId(annotation.logId),
           exportCache.statusNameMap.get(annotation.changedStatusFromId),
           exportCache.statusNameMap.get(annotation.changedStatusToId),

@@ -29,7 +29,6 @@ export class ImportService {
   validate = ajv().compile(schema);
 
   constructor(private db: DatabaseService) {
-    console.info('SCHEMA', schema);
   }
 
   /**
@@ -80,16 +79,13 @@ export class ImportService {
 
           // Annotations are optional, only present when exported from the application and not the library
           if ((<ImportData>importData).annotations) {
-            console.info('Importing annotations', importData.annotations);
             return this.importAnnotations(cache, importData.annotations);
           } else {
             return Promise.resolve(0);
           }
         })
       );
-    }
-    catch
-      (e) {
+    } catch (e) {
       alert('The file couldn\'t be loaded: format was not JSON.');
       console.error(e);
     }
@@ -148,8 +144,6 @@ export class ImportService {
         cache.statusIdMap.get(importAnnotation.changedStatusToName),
         importAnnotation.message, importAnnotation.timestamp));
     });
-
-    console.info('BulkAdd annotations', annotations);
 
     return this.db.annotations.bulkAdd(annotations);
   }

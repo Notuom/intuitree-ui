@@ -38,7 +38,6 @@ export class ExecutionTreeComponent implements OnInit {
   filterAnnotated = false;
 
   // Tree view parameters
-  viewMode = TreeViewComponent.listViewMode;
   viewLogs: Log[] = [];
   activeLog: Log = null;
 
@@ -166,7 +165,6 @@ export class ExecutionTreeComponent implements OnInit {
             }
             filterTagValueMap.get(tagValue.tag.id).push(tagValue);
           });
-          console.info('filterTagValueMap', filterTagValueMap);
 
           // Store all LogTags retrieved by LogId in a map
           const fulfilledLogTagMap: Map<number, LogTag[]> = new Map();
@@ -285,8 +283,6 @@ export class ExecutionTreeComponent implements OnInit {
         missingIds.push(log.parentId);
       }
     });
-
-    console.info('Missing IDs', missingIds);
 
     // Stop condition : when there are no more missing parent IDs, return all the queried logs
     if (missingIds.length === 0) {

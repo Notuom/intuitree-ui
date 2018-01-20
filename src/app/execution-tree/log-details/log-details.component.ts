@@ -4,6 +4,7 @@ import {Tag} from '../../shared/domain/tag';
 import {Annotation} from '../../shared/domain/annotation';
 import {DatabaseService} from '../../shared/database/database.service';
 import {Status} from '../../shared/domain/status';
+import {LogTag} from "../../shared/domain/log-tag";
 
 @Component({
   selector: 'app-log-details',
@@ -21,6 +22,7 @@ export class LogDetailsComponent implements OnChanges {
   @Output() update = new EventEmitter<null>();
 
   annotations: Annotation[] = [];
+  logTags: LogTag[] = [];
 
   addingAnnotation = false;
   addAnnotationStatus: Status = null;
@@ -56,14 +58,22 @@ export class LogDetailsComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    // Get all annotations and tags related to active log when it changes
     if (changes.hasOwnProperty('activeLog') && changes['activeLog'].currentValue !== null) {
-      console.info('statuses', this.statusMap);
       // Active Log has changed: retrieve its annotations
       this.annotations = [];
       this.resetAnnotation();
       this.db.annotations
         .where('logId').equals(this.activeLog.id).reverse()
-        .toArray().then(queriedAnnotations => this.annotations = queriedAnnotations);
+        .toArray().then(queriedAnnotations => {
+          console.info('Log Annotations', queriedAnnotations);
+        this.annotations = queriedAnnotations;
+        return this.db.logTags
+          .where('logId').equals(this.activeLog.id)
+          .toArray();
+      }).then(queriedLogTags => {
+        this.logTags = queriedLogTags;
+      });
     }
   }
 

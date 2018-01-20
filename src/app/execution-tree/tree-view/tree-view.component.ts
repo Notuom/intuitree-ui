@@ -3,7 +3,6 @@ import {Log} from '../../shared/domain/log';
 import * as d3 from 'd3';
 import {HierarchyNode} from 'd3-hierarchy';
 import {Status} from '../../shared/domain/status';
-import {BaseType, Selection} from 'd3-selection';
 
 @Component({
   selector: 'app-tree-view',
@@ -12,11 +11,6 @@ import {BaseType, Selection} from 'd3-selection';
 })
 export class TreeViewComponent implements OnChanges {
 
-  // String constants
-  static readonly listViewMode = 'list';
-  static readonly treeViewMode = 'tree';
-
-  @Input() mode = TreeViewComponent.listViewMode;
   @Input() logs: Log[] = [];
   @Output() detailsToggled = new EventEmitter<Log>();
 
@@ -49,7 +43,6 @@ export class TreeViewComponent implements OnChanges {
    */
   @HostListener('window:resize')
   onResize() {
-    console.info('onResize called', this.elementWidth, this.el.nativeElement.offsetWidth);
     if (this.elementWidth !== this.el.nativeElement.offsetWidth) {
       this.elementWidth = this.el.nativeElement.offsetWidth;
       // TODO see if there is a cleaner way to do this, but this seems to work.
@@ -62,7 +55,6 @@ export class TreeViewComponent implements OnChanges {
    * When data-binded attributes change, re-render with the new data.
    */
   ngOnChanges() {
-    console.info('ngOnChanges called');
     this.elementWidth = this.el.nativeElement.offsetWidth;
     // Only render if there are logs, otherwise this component will not be shown (see ngIf on parent component).
     if (this.logs.length > 0) {
@@ -100,8 +92,7 @@ export class TreeViewComponent implements OnChanges {
     // Compute the flattened node list.
     const nodes = this.root.descendants();
 
-    console.info('Nodes received when updating list', nodes);
-
+    console.info('Nodes received when updating', nodes);
     const height = nodes.length * this.barHeight + this.margin.top + this.margin.bottom;
 
     d3.select('svg').transition()
@@ -219,7 +210,7 @@ export class TreeViewComponent implements OnChanges {
   private details(node: any) {
     this.activeLog = node.data;
     this.detailsToggled.emit(this.activeLog);
-    console.info('Details', this.activeLog);
+    console.info('Log Details', this.activeLog);
   }
 
 }

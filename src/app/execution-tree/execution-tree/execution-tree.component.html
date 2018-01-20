@@ -7,19 +7,6 @@
     <form>
       <div class="row">
         <div class="col-sm">
-          <div class="form-group">
-            <label for="filterView">
-              View
-              <i class="fa fa-question-circle" tooltip="Change how the execution tree is visualized."></i>
-            </label>
-            <select [(ngModel)]="viewMode" (change)="applyFilters()" name="filterView" id="filterView"
-                    class="form-control">
-              <option value="list">List</option>
-              <option value="tree">Tree</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-sm">
           <label for="filterExecution">
             Execution
             <i class="fa fa-question-circle" tooltip="Choose which execution is being analyzed."></i>
@@ -99,8 +86,8 @@
     <i class="fa fa-question-circle" tooltip="Click on a log node to expand. Click on the * icon to show details."></i>
   </div>
   <div class="card-body">
-    <app-tree-view *ngIf="execution !== null && viewLogs.length > 0"
-                   [mode]="viewMode" [logs]="viewLogs" (detailsToggled)="setActiveLog($event)">
+    <app-tree-view *ngIf="execution !== null && viewLogs.length > 0" [logs]="viewLogs"
+                   (detailsToggled)="setActiveLog($event)">
     </app-tree-view>
     <div *ngIf="allExecutions.length > 0 && execution !== null && viewLogs.length === 0"
          class="alert alert-info mb-0">
