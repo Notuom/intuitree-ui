@@ -50,12 +50,19 @@ export class DatabaseService extends Dexie {
    * @param {Execution} execution
    */
   removeExecution(execution: Execution) {
-    return Observable.forkJoin(
-      Observable.fromPromise(this.executions.where(':id').equals(execution.id).delete()),
-      Observable.fromPromise(this.statuses.where('executionId').equals(execution.id).delete()),
-      Observable.fromPromise(this.tags.where('executionId').equals(execution.id).delete()),
-      Observable.fromPromise(this.logs.where('executionId').equals(execution.id).delete()),
-      Observable.fromPromise(this.annotations.where('executionId').equals(execution.id).delete())
+    return Observable.fromPromise(
+      this.logs.where('executionId')
+        .equals(execution.id).toArray()
+        .then(affectedLogs => {
+          return Observable.forkJoin(
+            Observable.fromPromise(this.executions.where(':id').equals(execution.id).delete()),
+            Observable.fromPromise(this.statuses.where('executionId').equals(execution.id).delete()),
+            Observable.fromPromise(this.logTags.where('logId').anyOf(affectedLogs.map(log => log.id)).delete()),
+            Observable.fromPromise(this.tags.where('executionId').equals(execution.id).delete()),
+            Observable.fromPromise(this.logs.where('executionId').equals(execution.id).delete()),
+            Observable.fromPromise(this.annotations.where('executionId').equals(execution.id).delete())
+          );
+        })
     );
   }
 
